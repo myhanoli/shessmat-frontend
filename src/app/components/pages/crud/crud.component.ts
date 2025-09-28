@@ -161,7 +161,7 @@ export class CrudComponent implements OnInit {
               
               this.clientDialog = false;
               
-                  swal.fire('Exito','Se guardo cliente con exito','success')
+                  swal.fire('Exito','Se guardo usuario con exito','success')
                   this._usuariosService.getUsers().subscribe(
                       clientes => this.clientes = clientes
                       );

@@ -38,6 +38,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { IngresaclienteComponent } from '../../ingresaCliente/ingresacliente.component';
 import { CrudComponent } from '../crud/crud.component';
 
+import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 
 @NgModule({
     imports: [
@@ -75,7 +76,8 @@ import { CrudComponent } from '../crud/crud.component';
     MatSelectModule,
     MatFormFieldModule,
     
-   
+   DynamicDialogModule,
+    
     
     
     

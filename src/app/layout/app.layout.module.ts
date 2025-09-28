@@ -18,7 +18,7 @@ import { AppConfigModule } from './config/config.module';
 
 import { AppLayoutComponent } from "./app.layout.component";
 import { AppSidebarComponent } from './sidebar/app.sidebar.component';
-
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
 @NgModule({
     declarations: [
         AppMenuitemComponent,
@@ -40,7 +40,8 @@ import { AppSidebarComponent } from './sidebar/app.sidebar.component';
         InputSwitchModule,
         RippleModule,
         RouterModule,
-        AppConfigModule
+        AppConfigModule,
+        DynamicDialogModule
     ],
     exports: [AppLayoutComponent]
 })

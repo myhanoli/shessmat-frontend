@@ -11,8 +11,8 @@ import { DatePipe } from '@angular/common';
 
 import { Cliente } from 'src/app/model/cliente';
 import { Cliente2 } from 'src/app/interface/cliente2';
-
-
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { Optional } from '@angular/core';
 
 
 @Component({
@@ -56,7 +56,7 @@ export class ClienteComponent implements OnInit {
 
     rowsPerPageOptions = [5, 10, 20];
 
-    constructor(private productService: ProductService, private messageService: MessageService,private _clientesService:ClientesService) { }
+    constructor(@Optional() public ref: DynamicDialogRef,private productService: ProductService, private messageService: MessageService,private _clientesService:ClientesService) { }
 
     ngOnInit() {
         this.btnGuardar = false;
@@ -99,7 +99,7 @@ export class ClienteComponent implements OnInit {
 
         if (this.cliente.fechaAlta) {
           // Dividir el string "yyyy-MM-dd" en partes
-          const partesFecha = this.cliente.fechaAlta.split('-');
+        //  const partesFecha = this.cliente.fechaAlta.split('-');
           
           // Crear un objeto Date en base a las partes
           /*this.cliente.fechaAlta = new Date(
@@ -279,4 +279,10 @@ export class ClienteComponent implements OnInit {
     onGlobalFilter(table: Table, event: Event) {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
     }
+
+
+    seleccionarCliente(cliente: any) {
+    this.ref.close(cliente); // Retorna el cliente al componente que abrió el diálogo
+  }
+
 }

@@ -24,15 +24,18 @@ import { Cliente2 } from 'src/app/interface/cliente2';
 
 import { CrudComponent } from '../crud/crud.component';
 import { IngresaclienteComponent } from '../../ingresaCliente/ingresacliente.component';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { ClienteComponent } from '../clientes/cliente.component';
 
 @Component({
   
   templateUrl: './recepcion-equipo.component.html',
   styleUrls: ['./recepcion-equipo.component.scss'],
-  providers: [MessageService,DatePipe]
+  providers: [MessageService,DatePipe,DialogService]
 })
 export class RecepcionEquipoComponent implements OnInit {
 
+   ref: DynamicDialogRef | undefined;
    clientes: Cliente2[] = [];
       
       cols: any[] = [];
@@ -57,7 +60,7 @@ export class RecepcionEquipoComponent implements OnInit {
       marcas = ['HP', 'Dell', 'Lenovo', 'Acer'];  // Ejemplo de opciones para Marca
 
       private overlayContainer: OverlayContainer
-      constructor(private fb: FormBuilder, private folioService: FolioService) {
+      constructor(private fb: FormBuilder, private folioService: FolioService,private dialogService: DialogService) {
         const fecha = new Date();
       this.formFolio = this.fb.group({
       folio: [`F${fecha.getFullYear()}-${Math.floor(Math.random() * 10000)}`],  // Este será el consecutivo, lo podemos dejar vacío al inicio
@@ -160,7 +163,23 @@ capturarMarca(value) {
 }
 
 addClient(){
- 
+  this.ref = this.dialogService.open(ClienteComponent, {
+      header: 'Seleccionar Cliente',
+      width: '60%',
+      contentStyle: { overflow: 'auto' },
+      closable: true,
+      dismissableMask: true,
+      data: {} // si necesitas pasar algo al componente
+    });
+
+    this.ref.onClose.subscribe((clienteSeleccionado: any) => {
+      if (clienteSeleccionado) {
+        this.formFolio.patchValue({
+          numCliente: clienteSeleccionado.id,
+          nombre: clienteSeleccionado.nombre
+        });
+      }
+    });
 }
 
 }

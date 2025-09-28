@@ -32,7 +32,14 @@ export class ClientesService {
   }
 
   creaCliente(cliente:Cliente2):Observable<Cliente2>{
-    console.log('Se recibe cliente con apellido parterno ' + cliente.apellidoMat)
+   // Asegurar formato correcto de fecha
+  if (cliente.fechaAlta instanceof Date) {
+    cliente.fechaAlta = cliente.fechaAlta.toISOString().split('T')[0];
+  } else if (typeof cliente.fechaAlta === 'string' && cliente.fechaAlta.includes('T')) {
+    cliente.fechaAlta = cliente.fechaAlta.split('T')[0];
+  }
+
+    console.log('Recibe cliente con apellido parterno ' + cliente.apellidoMat)
     console.log('Se recibe cliente con id ' + cliente.id)
     return this.http.post<Cliente2>('api/guardar',cliente,{headers:this.httpHeaders})
   }
@@ -46,6 +53,14 @@ export class ClientesService {
   }
 
   updateCliente(cliente:Cliente2):Observable<Cliente2>{
+
+    // Asegurar formato correcto de fecha
+  if (cliente.fechaAlta instanceof Date) {
+    cliente.fechaAlta = cliente.fechaAlta.toISOString().split('T')[0];
+  } else if (typeof cliente.fechaAlta === 'string' && cliente.fechaAlta.includes('T')) {
+    cliente.fechaAlta = cliente.fechaAlta.split('T')[0];
+  }
+    console.log('Recibe cliente con fechaAlta ' + cliente.fechaAlta)
     return this.http.put<Cliente2>('api/actualizar/'+cliente.id,cliente,{headers:this.httpHeaders})
 
   }
