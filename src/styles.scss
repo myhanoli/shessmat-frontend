@@ -9,6 +9,20 @@ $gutter: 1rem; //for primeflex grid system
 @import "../node_modules/primeicons/primeicons.css";
 
 /* Demos */
-@import "assets/demo/styles/flags/flags.css";
-@import "assets/demo/styles/badges.scss";
-@import "assets/demo/styles/code.scss";
+@import "assets/appassets/styles/flags/flags.css";
+@import "assets/appassets/styles/badges.scss";
+@import "assets/appassets/styles/code.scss";
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+/* Usamos un contenedor personalizado para que el mat-select se dibuje fuera del p-dialog */
+.custom-overlay-container .mat-select-panel {
+    z-index: 9999 !important;
+  }
+
+/* Estilo para el campo de entrada mat-input-element */
+.mat-mdc-text-field-wrapper .mat-input-element {
+  font-size: 18px;            /* Ajusta el tamaño del texto */
+  height: 18px;               /* Ajusta la altura del campo */
+}

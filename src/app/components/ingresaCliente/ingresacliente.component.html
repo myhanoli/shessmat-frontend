@@ -1,0 +1,172 @@
+
+
+<div class = "container-lg main-container">
+ 
+      
+        <div class="container main-container">
+          <div class="card bg-light mb-3" >
+              <div class="card-header">Clientes
+              
+                <button class="btn btn-rounded btn float-right" type="button" (click)="onClose()"></button>
+              
+            </div>
+              <div class="card-body">
+                <div class="card-header">
+                  <div>
+                    <table>
+                      <tr>
+                        <th>
+                          <button class="btn btn-rounded btn" type="button" (click)="getItem($event)"></button>
+                        </th>
+                        <th>
+                          <button class="btn btn-rounded btn" type="button" (click)="getItem($event)"></button>
+                        </th>
+                      </tr>
+                      
+                    </table>
+                    
+                   
+                </div>
+                </div>
+
+                <div class="card-header" *ngIf="item">
+                <h5>{{descripcionAlta}}</h5> 
+           
+                <form  [formGroup]="formCliente">
+                  <div class="form-row ">
+                     <!--<div class="form-group col-md-4">
+                       <label for="nombre">Nombre</label>
+                       <input type="text" class="form-control" id="nombre" [(ngModel)]="cliente.nombre" formControlName="nombre">
+                     </div>-->
+
+                     <div class="form-group col-md-4">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>Nombre:</mat-label>
+                        <input matInput id="nombre" [(ngModel)]="cliente.nombre" formControlName="nombre">
+                      </mat-form-field>
+                    </div>
+                     
+                     <!--<div class="form-group col-md-4">
+                       <label for="apellidoPat">1er Apellido</label>
+                       <input type="text" class="form-control"  [(ngModel)]="cliente.apellidoPat" formControlName="apellidoPat">
+                     </div>-->
+                     <div class="form-group col-md-4">
+                      <mat-form-field class="example-full-width">
+                        <mat-label>Paterno:</mat-label>
+                        <input matInput id="apellidoPat" [(ngModel)]="cliente.apellidoPat" formControlName="apellidoPat">
+                      </mat-form-field>
+                    </div>
+                     <!--<div class="form-group col-md-4">
+                       <label for="apellidoMat">2do Apellido</label>
+                       <input type="text" class="form-control"  [(ngModel)]="cliente.apellidoMat" formControlName="apellidoMat">
+                     </div>-->
+                      <div class="form-group col-md-3">
+                    <mat-form-field class="example-full-width">
+                      <mat-label>Materno:</mat-label>
+                      <input matInput id="apellidoMat" [(ngModel)]="cliente.apellidoMat" formControlName="apellidoMat">
+                    </mat-form-field>
+                  </div>
+                   </div>
+                  
+               
+                     <div class="form-row">
+                       <!--<div class="form-group col-md-4">
+                         <label for="telefono">Télefono</label>
+                         <input type="text" class="form-control"  [(ngModel)]="cliente.telefono" formControlName="telefono">
+                       </div>-->
+                       
+                       <div class="form-group col-md-4">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>Direccion:</mat-label>
+                          <input matInput id="direccion" [(ngModel)]="cliente.direccion" formControlName="direccion">
+                        </mat-form-field>
+                      </div>
+
+                       <div class="form-group col-md-4">
+                        <mat-form-field class="example-full-width">
+                          <mat-label>Télefono:</mat-label>
+                          <input matInput id="telefono" [(ngModel)]="cliente.telefono" formControlName="telefono">
+                        </mat-form-field>
+                      </div>
+
+                     <!--  <div class="form-group col-md-4">
+                         <label for="correo">Correo</label>
+                         <input type="text" id="correo" class="form-control"  [(ngModel)]="cliente.correo" formControlName="correo">
+                      
+                      <div *ngIf="f.correo.touched && f.correo.invalid" class="alert alert-danger">
+                          <div *ngIf="f.correo.errors.required">Correo es requerido.</div>
+                          <div *ngIf="f.correo.errors.email">Por Favor, ingresa una direccion de correo valida.</div>
+                      </div>
+                    </div>-->
+                    <div class="form-group col-md-3">
+                      <mat-form-field class="example-full-width" >
+                        <mat-label>Email</mat-label>
+                        <input type="email" matInput placeholder="mail@example.com"  [(ngModel)]="cliente.correo" formControlName="correo">
+                      </mat-form-field>
+                  </div>
+
+
+                  </div>
+                     <div class="form-row">
+                       <div class="form-group col-md-2">
+                        <button type="button" class="btn btn-primary" (click) = "creaCliente()"  *ngIf="!btnGuardar else elseBlock" >Guardar</button>
+                        <ng-template #elseBlock>
+                         <button type="button" class="btn btn-primary" (click) = "actualizaCliente()" >Actualizar</button>
+                        </ng-template>
+                       </div>
+                    
+                       <div class="form-group col-md-2">
+                        <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+                       </div>
+                     </div>
+
+                   </form>
+              
+                </div>
+                <h5 class="card-title"></h5>
+                
+
+      <!--<table class="table table-bordered table-striped">
+        <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Paterno</th>
+        <th>Materno</th>
+        <th>Télefono</th>
+        <th>Correo</th>
+        <th>Eliminar</th>
+        <th>Editar</th>
+      </tr>
+        </thead>
+      <tbody>
+        <tr *ngFor="let item of clientes">
+          <td (click) = 'seleccionar(item)'>{{item.nombre}}</td>
+          <td (click) = 'seleccionar(item)'>{{item.apellidoPat}}</td>
+          <td (click) = 'seleccionar(item)'>{{item.apellidoMat}}</td>
+          <td (click) = 'seleccionar(item)'>{{item.telefono}}</td>
+          <td (click) = 'seleccionar(item)'>{{item.correo}}</td>
+          <td>
+            <button class="btn btn-rounded btn" type="button" name="borrar" (click) = 'eliminar(item)'><img class="box" src="assets/img/borrar.png"></button>
+          </td>
+          
+          <td>
+            <button class="btn btn-rounded btn" type="button" (click) = 'cargaCliente(item)'> <img class="box" src="assets/img/lapiz.png"></button>
+           
+          </td>
+        </tr>
+      
+      </tbody>
+      </table>-->
+
+      
+
+
+
+         </div>
+         </div>
+          
+      </div>
+      
+    
+    </div>
+    

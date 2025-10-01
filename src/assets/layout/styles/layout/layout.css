@@ -96,14 +96,14 @@ a {
 .layout-topbar .layout-topbar-logo {
   display: flex;
   align-items: center;
-  color: var(--surface-900);
+  
   font-size: 1.5rem;
   font-weight: 500;
   width: 300px;
   border-radius: 12px;
 }
 .layout-topbar .layout-topbar-logo img {
-  height: 2.5rem;
+  height: 6.5rem;
   margin-right: 0.5rem;
 }
 .layout-topbar .layout-topbar-logo:focus {
@@ -142,7 +142,7 @@ a {
   display: none;
 }
 .layout-topbar .layout-menu-button {
-  margin-left: 2rem;
+  margin-left: 5rem;
 }
 .layout-topbar .layout-topbar-menu-button {
   display: none;
@@ -520,4 +520,9 @@ p {
 }
 p:last-child {
   margin-bottom: 0;
+}
+
+/* Usamos un contenedor personalizado para que el mat-select se dibuje fuera del p-dialog */
+.custom-overlay-container .mat-select-panel {
+  z-index: 9999 !important;
 }

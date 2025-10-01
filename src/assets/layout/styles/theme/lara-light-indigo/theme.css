@@ -4408,7 +4408,18 @@
     background: #ffffff;
     color: #4b5563;
     padding: 0 1.5rem 2rem 1.5rem;
+    
   }
+
+  .mat-select-panel {
+    z-index: 9999 !important;
+  }
+  
+  .ui-dialog {
+    z-index: 1000 !important;
+  }
+  
+
   .p-dialog .p-dialog-content:last-of-type {
     border-bottom-right-radius: 6px;
     border-bottom-left-radius: 6px;

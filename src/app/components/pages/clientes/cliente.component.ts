@@ -65,7 +65,20 @@ export class ClienteComponent implements OnInit {
             clientes => this.clientes = clientes
             
             );
-      
+            
+        /*this.cols = [
+            { field: 'product', header: 'Product' },
+            { field: 'price', header: 'Price' },
+            { field: 'category', header: 'Category' },
+            { field: 'rating', header: 'Reviews' },
+            { field: 'inventoryStatus', header: 'Status' }
+        ];
+
+        this.statuses = [
+            { label: 'INSTOCK', value: 'instock' },
+            { label: 'LOWSTOCK', value: 'lowstock' },
+            { label: 'OUTOFSTOCK', value: 'outofstock' }
+        ];*/
 
     }
 
@@ -102,7 +115,10 @@ export class ClienteComponent implements OnInit {
        // this.updateClient = true;
     }
 
-  
+    /*deleteProduct(product: Product) {
+        this.deleteProductDialog = true;
+        this.cliente = { ...this.cliente };
+    }*/
 
     eliminar(cliente:Cliente2):void{
 

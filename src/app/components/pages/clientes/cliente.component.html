@@ -1,0 +1,179 @@
+<div class="grid">
+    <div class="col-10">
+        <div class="card px-6 py-6">
+            <p-toast></p-toast>
+            
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+
+                        <button pButton pRipple label="" icon="pi pi-plus" class="p-button-success mr-2"  
+                         pTooltip="Agregar Cliente" showDelay="1000" hideDelay="300" tooltipPosition="top" 
+                         (click)="nuevoCliente()">
+                        </button>
+                        <button pButton pRipple label="" icon="pi pi-trash" class="p-button-danger"
+                        pTooltip="Eliminar Clientes" showDelay="1000" hideDelay="300" tooltipPosition="top" 
+                        (click)="deleteSelectedProducts()" [disabled]="!selectedProducts || !selectedProducts.length"></button>
+                    </div>
+                </ng-template>
+
+               
+
+                <ng-template pTemplate="right">
+                    <!--<p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload>-->
+                    <button pButton pRipple label="Exportar" icon="pi pi-upload" class="p-button-help" (click)="dt.exportCSV()"></button>
+                </ng-template>
+            </p-toolbar>
+
+            <p-table #dt [value]="clientes" [columns]="cols" styleClass="p-datatable-sm" [tableStyle]="{'min-width': '50rem'}" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['name','country.name','representative.name','status']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [(selection)]="selectedProducts" selectionMode="multiple" [rowHover]="true" dataKey="id">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h3 class="m-0">Lista de Clientes</h3>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..."  class="w-full sm:w-auto"/>
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th pSortableColumn="code">Id <p-sortIcon field="code"></p-sortIcon></th>
+                        <th pSortableColumn="name">Nombre <p-sortIcon field="name"></p-sortIcon></th>
+                        <th>Paterno</th>
+                        <th pSortableColumn="price">Materno <p-sortIcon field="price"></p-sortIcon></th>
+                        <th pSortableColumn="category">Télefono <p-sortIcon field="category"></p-sortIcon></th>
+                        <th pSortableColumn="rating">Correo <p-sortIcon field="rating"></p-sortIcon></th>
+                        <th pSortableColumn="inventoryStatus">Direccion<p-sortIcon field="inventoryStatus"></p-sortIcon></th>
+                        <th pSortableColumn="inventoryStatus">Fecha de Alta<p-sortIcon field="inventoryStatus"></p-sortIcon></th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-cliente>
+                    <tr (click)="seleccionarCliente(cliente)">
+                        <td>
+                            <p-tableCheckbox [value]="cliente"></p-tableCheckbox>
+                        </td>
+                        <td style="width:14%; min-width:10rem;"><span class="p-column-title">Id</span>
+                            {{cliente.code || cliente.id}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Nombre</span>
+                            {{cliente.nombre}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;"><span class="p-column-title">Paterno</span>
+                            {{cliente.apellidoPat}}
+                            <!--<img [src]="'assets/demo/images/product/' + product.image" [alt]="product.name" width="100" class="shadow-4" />-->
+                        </td>
+                        <td style="width:14%; min-width:8rem;">
+                            <span class="p-column-title">Materno</span>
+                            {{cliente.apellidoMat}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Télefono</span>
+                            {{cliente.telefono}}
+                        </td>
+                        <td style="width:14%; min-width: 10rem;">
+                            <span class="p-column-title">Correo</span>
+                            {{cliente.correo}}
+                            <!--<p-rating [ngModel]="product.rating" [readonly]="true" [cancel]="false"></p-rating>-->
+                        </td>
+                        <td style="width:14%; min-width: 10rem;"><span class="p-column-title">Direccion</span>
+                            <span [class]="'cliente-badge status-' + (cliente.inventoryStatus ? cliente.inventoryStatus.toLowerCase() : '')">{{cliente.direccion}}</span>
+                        </td>
+                        <td style="width:14%; min-width: 10rem;"><span class="p-column-title">Fecha de Alta</span>
+                            <span [class]="'cliente-badge status-' + (cliente.inventoryStatus ? cliente.inventoryStatus.toLowerCase() : '')">{{cliente.fechaAlta}}</span>
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" pTooltip="Editar" showDelay="1000" hideDelay="300" tooltipPosition="top"  (click)="editClient(cliente)"></button>
+                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" pTooltip="Eliminar" showDelay="1000" hideDelay="300" tooltipPosition="top" (click)="eliminar(cliente)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog [(visible)]="clientDialog" [style]="{width: '450px'}" header="Datos del Cliente" [modal]="true" class="p-fluid">
+            <ng-template pTemplate="content">
+                <!--<img [src]="'assets/demo/images/product/' + product.image" [alt]="product.image" width="150" class="mt-0 mx-auto mb-5 block shadow-2" *ngIf="product.image">-->
+                <div class="field">
+                    <label for="name">Nombre</label>
+                    <input type="text" pInputText id="name" [(ngModel)]="cliente.nombre" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !cliente.name}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !cliente.nombre">El Nombre es requerido.</small>
+                </div>
+                <div class="field">
+                    <label for="name">Apellido Paterno</label>
+                    <input type="text" pInputText id="name" [(ngModel)]="cliente.apellidoPat" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !cliente.apellidoPat}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !cliente.apellidoPat">El Apellido Paterno es requerido.</small>
+                </div>
+                <div class="field">
+                    <label for="name">Apellido Materno</label>
+                    <input type="text" pInputText id="name" [(ngModel)]="cliente.apellidoMat" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !cliente.apellidoMat}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !cliente.apellidoMat">El Apellido Materno es requerido.</small>
+                </div>
+                <div class="field">
+                    <label for="name">Telefono</label>
+                    <input type="text" pInputText id="name" [(ngModel)]="cliente.telefono" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !cliente.telefono}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !cliente.telefono">El Telefono es requerido</small>
+                </div>
+                <div class="field">
+                    <label for="name">Correo</label>
+                    <input type="text" pInputText id="name" [(ngModel)]="cliente.correo" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !cliente.correo}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !cliente.correo">El Correo es requerido</small>
+                </div>
+                <div class="field">
+                    <label for="name">Direccion</label>
+                    <input type="direccion" pInputText id="direccion" [(ngModel)]="cliente.direccion" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !cliente.direccion}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !cliente.direccion">La Direccion es requerida.</small>
+
+                </div>
+                <div class="field">
+                    <label for="fechaAlta">Fecha de Alta</label>
+                    <p-calendar [(ngModel)]="cliente.fechaAlta" id="fechaAlta" ></p-calendar>
+                    <!--<input type="fechaAlta" pInputText id="fechaAlta" [(ngModel)]="cliente.fechaAlta" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !cliente.fechaAlta}"/>-->
+                    <!-- Mensaje de error si la fecha es requerida y no está seleccionada -->
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !cliente.fechaAlta">La Fecha de alta es requerida.</small>
+                </div>
+                
+                
+              
+            </ng-template>
+
+        <ng-template pTemplate="footer">
+                <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+            @if (!btnGuardar) {
+                <button pButton pRipple label="Guardar" icon="pi pi-check" class="p-button-text" (click)="creaCliente()"></button>
+            } @else {
+                <button pButton pRipple label="Actualizar" icon="pi pi-check" class="p-button-text" (click)="actualizaCliente()"></button>
+            }
+        </ng-template>
+        </p-dialog>
+
+        <!--<p-dialog [(visible)]="deleteProductDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span *ngIf="cliente">¿Estas seguro que quieres eliminar <b>{{cliente.name}}</b>?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteProductDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDelete()"></button>
+            </ng-template>
+        </p-dialog>-->
+
+       <!-- <p-dialog [(visible)]="deleteProductsDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span>¿Estas seguro que deseas eliminar estos clientes?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteProductsDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDeleteSelected()"></button>
+            </ng-template>
+        </p-dialog>-->
+    </div>
+</div>
+

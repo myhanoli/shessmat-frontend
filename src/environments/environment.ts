@@ -5,9 +5,12 @@
 
 export const environment = {
   production: false,
-  urlHost:'http://localhost:8080/',
-  urlApi: 'http://localhost:8080/api/v1/',
-  userId:1
+  //urlHost:'http://localhost:8080/',
+  //urlApi: 'http://localhost:8080/api/v1/',
+  urlHost:'https://shessmat-backend-production.up.railway.app/',
+  urlApi: 'https://shessmat-backend-production.up.railway.app/api/v1/',
+  userId:1,
+  authTokenKey: 'jwt'
 };
 
 /*

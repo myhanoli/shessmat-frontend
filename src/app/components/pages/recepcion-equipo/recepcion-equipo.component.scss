@@ -1,0 +1,91 @@
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 16px;
+    background-color: #fafafa;
+    box-shadow: 0 4px 12px rgba(53, 10, 172, 0.1);
+    border-radius: 8px;
+  }
+  
+  mat-card {
+    margin-bottom: 20px;
+    border-radius: 0.5px;
+  }
+  
+ 
+
+  mat-card-header {
+    background-color: #1976d2;
+
+    color: white;
+    padding: 10px;
+    border-radius: 8px 8px 0 0;
+    height: 25px;
+  }
+  
+  mat-card-title {
+    font-weight: 10%;
+
+  }
+  
+  .form-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .form-field {
+    flex: 0 1 calc(50% - 10px);  // Ajusta los campos al 50% de ancho con espacio entre ellos
+    min-width: 200px;  // Asegura que no se haga demasiado pequeño en pantallas pequeñas
+  }
+  
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+    width: 100%;  // Asegura que el textarea ocupe todo el ancho disponible
+  }
+  
+  mat-form-field{
+    width: 10%;  // Para que el textarea se ajuste completamente
+  }
+
+  mat-form-field textarea {
+    width: 100%;  // Para que el textarea se ajuste completamente
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  button {
+    width: auto;
+    padding: 10px 20px;
+  }
+  
+/* src/styles.scss */
+
+/* Asegúrate de que el mat-select y su overlay tengan un z-index más alto */
+::ng-deep {
+    .mat-select-panel {
+      z-index: 999999 !important; /* Forzar un z-index más alto */
+    }
+  
+    /* Asegurarse de que el contenedor overlay esté encima de cualquier otro elemento */
+    .cdk-overlay-container {
+      z-index: 999999 !important;  /* Muy alto para asegurar que el mat-select esté encima */
+    }
+  
+    /* Ajustar el z-index de p-dialog y su contenido */
+    .ui-dialog {
+      z-index: 999 !important;  /* Valor bajo para p-dialog */
+    }
+    .ui-dialog .ui-widget-content {
+      z-index: 999 !important; /* Mantener el contenido dentro del rango esperado */
+    }
+  }
+
+
+
+

@@ -1,0 +1,63 @@
+
+  
+  .layout-topbar-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .logo-left {
+    width: 12rem;  /* Ajusta el tamaño de la imagen a la izquierda */
+    height: auto;
+  }
+  
+  .layout-header-logo-container {
+    display: flex;
+    justify-content: center;  /* Centra la imagen dentro del contenedor */
+    flex-grow: 1;              /* Permite que el contenedor central ocupe todo el espacio disponible */
+    align-items: center;      /* Alinea verticalmente */
+  }
+  
+  .logo-center {
+    width: 18rem;  /* Ajusta el tamaño de la imagen central */
+    height: auto;
+  }
+  
+  .logout-container {
+    display: flex;
+    align-items: center; /* Centra el botón logout verticalmente */
+    justify-content: center; /* Centra el contenido dentro de este contenedor */
+  }
+  
+  .logout-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none; /* Sin fondo */
+    border: none; /* Sin bordes */
+    cursor: pointer; /* Muestra el cursor como puntero al pasar sobre el botón */
+  }
+  
+  .logout-button i {
+  margin-right: 9px; /* Espaciado entre el ícono y el texto */
+  font-size: 1.5rem; /* Tamaño adecuado para el ícono */
+}
+
+  .logout-button span {
+    font-size: 1rem;
+    color: #000; /* Color del texto */
+  }
+
+  .layout-topbar-menu {
+    display: flex;
+    justify-content: center; /* Centra los elementos horizontalmente */
+    align-items: center; /* Centra los elementos verticalmente */
+    
+    padding: 10px 20px; /* Ajusta el padding según sea necesario */
+  }
+  .user-info {
+    margin-right: 10px; /* Añade un margen a la derecha para separar el texto del botón */
+    font-size: 1rem; /* Ajusta el tamaño de fuente según el diseño */
+    
+  }
+  
