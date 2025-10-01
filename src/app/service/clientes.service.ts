@@ -20,13 +20,14 @@ export class ClientesService {
   private httpHeaders = new HttpHeaders({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Access-Control-Allow-Origin': 'http://localhost:8080/'
+    //'Access-Control-Allow-Origin': 'http://localhost:8080/'
+    'Access-Control-Allow-Origin': 'https://shessmat-backend-production.up.railway.app/'
     })
 
   constructor(private http: HttpClient) { }
 
   getClientes(): Observable<Cliente2[]> {
-    return this.http.get('api/lista').pipe(
+    return this.http.get(environment.urlHost+'api/lista').pipe(
       map(response => response as Cliente2[])
     );
   }
@@ -41,15 +42,15 @@ export class ClientesService {
 
     console.log('Recibe cliente con apellido parterno ' + cliente.apellidoMat)
     console.log('Se recibe cliente con id ' + cliente.id)
-    return this.http.post<Cliente2>('api/guardar',cliente,{headers:this.httpHeaders})
+    return this.http.post<Cliente2>(environment.urlHost+'api/guardar',cliente,{headers:this.httpHeaders})
   }
 
   borraCliente(id:number):Observable<Cliente2>{
-    return this.http.delete<Cliente2>('api/eliminar/'+id,{headers:this.httpHeaders})
+    return this.http.delete<Cliente2>(environment.urlHost+'api/eliminar/'+id,{headers:this.httpHeaders})
   }
 
   getCliente(id:number): Observable<Cliente2> {
-    return this.http.get<Cliente2>('api/idCliente/'+id,{headers:this.httpHeaders})
+    return this.http.get<Cliente2>(environment.urlHost+'api/idCliente/'+id,{headers:this.httpHeaders})
   }
 
   updateCliente(cliente:Cliente2):Observable<Cliente2>{
@@ -61,7 +62,7 @@ export class ClientesService {
     cliente.fechaAlta = cliente.fechaAlta.split('T')[0];
   }
     console.log('Recibe cliente con fechaAlta ' + cliente.fechaAlta)
-    return this.http.put<Cliente2>('api/actualizar/'+cliente.id,cliente,{headers:this.httpHeaders})
+    return this.http.put<Cliente2>(environment.urlHost+'api/actualizar/'+cliente.id,cliente,{headers:this.httpHeaders})
 
   }
   

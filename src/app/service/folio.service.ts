@@ -19,7 +19,8 @@ export class FolioService {
 private httpHeaders = new HttpHeaders({
 'Content-Type': 'application/json',
 'Accept': 'application/json',
-'Access-Control-Allow-Origin': 'http://localhost:8080/'
+//'Access-Control-Allow-Origin': 'http://localhost:8080/'
+'Access-Control-Allow-Origin': 'https://shessmat-backend-production.up.railway.app/'
 })
 
   constructor(private http: HttpClient) {
@@ -46,7 +47,8 @@ private httpHeaders = new HttpHeaders({
     console.log("numSerie in service: " + folio.numSerie);
     console.log("Comentario in service: " + folio.comentarios);
   console.log("JsonFolio: " + folio)
-    return this.http.post<Folio>('http://localhost:8080/api/guardarFolio',folio,{headers:this.httpHeaders})
+   // return this.http.post<Folio>('http://localhost:8080/api/guardarFolio',folio,{headers:this.httpHeaders})
+    return this.http.post<Folio>('https://shessmat-backend-production.up.railway.app/api/guardarFolio',folio,{headers:this.httpHeaders})
   }
 
   exportPdf(elementPDF:FolioModel):Observable<Blob>{
