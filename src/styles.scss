@@ -1,3 +1,8 @@
+@use "tailwindcss/base";
+@use "tailwindcss/components";
+@use "tailwindcss/utilities";
+
+
 /* You can add global styles to this file, and also import other style files */
 
 $gutter: 1rem; //for primeflex grid system
@@ -12,6 +17,7 @@ $gutter: 1rem; //for primeflex grid system
 @import "assets/appassets/styles/flags/flags.css";
 @import "assets/appassets/styles/badges.scss";
 @import "assets/appassets/styles/code.scss";
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
