@@ -1,36 +1,49 @@
-<div class="layout-topbar">
-    <a class="layout-topbar-logo" routerLink="/layout">
-        <img src="assets/layout/images/logoShessmat.jpg" alt="shessmat logo" class="w-6rem h-5rem flex-shrink-10"> 
-    </a>
-    
-    <button #menubutton class="p-link layout-menu-button layout-topbar-button" (click)="layoutService.onMenuToggle()">
-        <i class="pi pi-bars"></i>
-    </button>
-    
-    
-      <!-- Contenedor para centrar la imagen del logo -->
-      <div class="layout-header-logo-container">
-        <img src="assets/layout/images/shessmat.png" alt="shessmat logo" class="logo-center">
-    </div>
-     
-
-    <button #topbarmenubutton class="p-link layout-topbar-menu-button layout-topbar-button" (click)="layoutService.showProfileSidebar()">
-        <i class="pi pi-ellipsis-v"></i>
-    </button>
+<div class="layout-topbar flex items-center justify-between px-4 py-2 bg-white shadow-md">
   
+  <!-- Logo izquierda -->
+  <a class="layout-topbar-logo flex items-center" routerLink="/layout">
+    <img src="assets/layout/images/logoShessmat.jpg" 
+         alt="shessmat logo" 
+         class="w-20 h-16 object-contain">
+  </a>
 
-    <div #topbarmenu class="layout-topbar-menu" [ngClass]="{'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible}">
-        <a class="user-info text-black fst-normal fs-10 title m-lg-4">{{user}}</a>
+  <!-- Botón menú hamburguesa (solo en móvil) -->
+  <button #menubutton 
+          class="p-link layout-menu-button layout-topbar-button md:hidden text-gray-600 hover:text-black" 
+          (click)="layoutService.onMenuToggle()">
+    <i class="pi pi-bars text-xl"></i>
+  </button>
+
+  <!-- Logo centrado (visible solo en desktop) -->
+  <div class="hidden md:flex flex-1 justify-center">
+    <img src="assets/layout/images/shessmat.png" 
+         alt="shessmat logo" 
+         class="h-12 object-contain">
+  </div>
+
+  <!-- Botón menú superior (perfil / opciones) -->
+  <button #topbarmenubutton 
+          class="p-link layout-topbar-menu-button layout-topbar-button md:hidden text-gray-600 hover:text-black" 
+          (click)="layoutService.showProfileSidebar()">
+    <i class="pi pi-ellipsis-v text-xl"></i>
+  </button>
+
+  <!-- Menú usuario / logout -->
+  <div #topbarmenu 
+       class="hidden md:flex items-center gap-4"
+       [ngClass]="{'flex': layoutService.state.profileSidebarVisible, 'hidden': !layoutService.state.profileSidebarVisible}">
     
-        <!-- Contenedor del botón logout -->
-        <div class="logout-container">
-            <button class="p-link layout-topbar-button logout-button" (click)="logout()">
-                <i class="pi pi-sign-out"></i>
-                <span>Salir</span>
-            </button>
-        </div>
+    <!-- Usuario -->
+    <a class="user-info text-gray-800 text-sm font-medium">{{user}}</a>
+
+    <!-- Logout -->
+    <div class="logout-container">
+      <button class="p-link layout-topbar-button flex items-center gap-2 text-red-600 hover:text-red-800" 
+              (click)="logout()">
+        <i class="pi pi-sign-out"></i>
+        <span class="hidden sm:inline">Salir</span>
+      </button>
     </div>
+  </div>
 
-  
-    
 </div>
