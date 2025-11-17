@@ -11,6 +11,6 @@ export class Folio {
   marca: String;
   modelo: String;
   numSerie: String;
-  cliente:Cliente2;
+  cliente: Cliente2 = new Cliente2();
   comentarios:String;
 }

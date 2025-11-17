@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders,HttpRequest, HttpEvent} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {forkJoin, Observable} from 'rxjs';
 
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -41,13 +41,13 @@ private httpHeaders = new HttpHeaders({
   
 
   creaFolio(folio:Folio):Observable<Folio>{
-    console.log("cliente in service : " + folio.cliente);
-    console.log("marca in service : " + folio.marca);
+    console.log("cliente in service : " + folio.cliente.id);
+    /*console.log("marca in service : " + folio.marca);
     console.log("modelo in service: " + folio.modelo);
     console.log("numSerie in service: " + folio.numSerie);
-    console.log("Comentario in service: " + folio.comentarios);
+    console.log("Comentario in service: " + folio.comentarios);*/
   console.log("JsonFolio: " + folio)
-   // return this.http.post<Folio>('http://localhost:8080/api/guardarFolio',folio,{headers:this.httpHeaders})
+  //  return this.http.post<Folio>('http://localhost:8080/api/guardarFolio',folio,{headers:this.httpHeaders})
     return this.http.post<Folio>('https://shessmat-backend-production.up.railway.app/api/guardarFolio',folio,{headers:this.httpHeaders})
   }
 
@@ -97,6 +97,24 @@ private httpHeaders = new HttpHeaders({
     
       return this.http.post<Folio>('api/foliosSelect',array,{headers:this.httpHeaders})
     }
+
+
+  /*  subirImagen(base64: string, folio: string): Observable<any> {
+    const body = { folio, base64 };
+    return this.http.post('api/upload',body,{headers:this.httpHeaders});
+  }
+
+  subirMultiplesImagenes(imagenes: { base64: string; folio: string }[]): Observable<any[]> {
+    // Envía todas las imágenes en paralelo
+    console.log('Se enviaron las imagenes con su folio')
+    return forkJoin(imagenes.map(img => this.subirImagen(img.base64, img.folio)));
+  }*/
+
+    subirMultiplesImagenes(formData: FormData): Observable<any> {
+      console.log('Folio:', formData.get('folio'));
+ // return this.http.post('http://localhost:8080/api/upload',formData);
+  return this.http.post('https://shessmat-backend-production.up.railway.app/api/upload',formData);
+}
 
 
 }
