@@ -33,8 +33,8 @@ export class ClienteComponent implements OnInit {
     deleteProductsDialog: boolean = false;
 
     products: Product[] = [];
-
     
+    first: number = 0;
 
     //product: Product = {};
 
@@ -54,7 +54,7 @@ export class ClienteComponent implements OnInit {
     clientes: Cliente2[];
     cliente:Cliente2 = new Cliente2()
 
-    rowsPerPageOptions = [5, 10, 20];
+    rowsPerPageOptions = [5,10,20];
 
     constructor(@Optional() public ref: DynamicDialogRef,private productService: ProductService, private messageService: MessageService,private _clientesService:ClientesService) { }
 
@@ -162,9 +162,10 @@ export class ClienteComponent implements OnInit {
             this.clientDialog = false;
             
                 swal.fire('Exito','Registro actualizado con exito','success')
-                this._clientesService.getClientes().subscribe(
+                /*this._clientesService.getClientes().subscribe(
                     clientes => this.clientes = clientes
-                    );
+                    );*/
+                     this.reloadClientes();
                
             
               }
@@ -185,9 +186,10 @@ export class ClienteComponent implements OnInit {
               this.clientDialog = false;
               
                   swal.fire('Exito','Se guardo cliente con exito','success')
-                  this._clientesService.getClientes().subscribe(
+                  /*this._clientesService.getClientes().subscribe(
                       clientes => this.clientes = clientes
-                      );
+                      );*/
+                       this.reloadClientes();
                  
               
                 }
@@ -248,4 +250,12 @@ export class ClienteComponent implements OnInit {
     this.ref.close(cliente); // Retorna el cliente al componente que abrió el diálogo
   }
 
+reloadClientes() {
+  this._clientesService.getClientes().subscribe(clientes => {
+     this.clientes = clientes;
+     this.first = 0; // resetear paginado
+  });
 }
+
+}
+

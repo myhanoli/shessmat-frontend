@@ -13,4 +13,8 @@ export class Folio {
   numSerie: String;
   cliente: Cliente2 = new Cliente2();
   comentarios:String;
+  encendido: boolean;       
+  traeCargador: boolean;    
+  marcaCargador: String;    
+  numSerieCargador: String; 
 }

@@ -47,16 +47,16 @@
       </p-toolbar>
 
       <!-- Tabla responsive -->
-      <div class="overflow-x-auto">
+      <div class="overflow-x-auto w-full h-[600px]">
         <p-table
   #dt
   [value]="clientes"
   [columns]="cols"
   styleClass="p-datatable-sm w-full"
   responsiveLayout="scroll"
-  [rows]="10"
+  [rows]="5"
   [paginator]="true"
-  [rowsPerPageOptions]="[10,20,30]"
+  [rowsPerPageOptions]="[5,10,20]"
   [showCurrentPageReport]="true"
   [(selection)]="selectedProducts"
   selectionMode="multiple"

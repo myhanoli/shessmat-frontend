@@ -27,6 +27,7 @@ import { IngresaclienteComponent } from '../../ingresaCliente/ingresacliente.com
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ClienteComponent } from '../clientes/cliente.component';
 import Swal from 'sweetalert2';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   
@@ -57,124 +58,186 @@ export class RecepcionEquipoComponent implements OnInit {
       selectedMarca:Marca = {id:0,marca:''};
 
       formFolio: FormGroup;
-      tiposEquipos = ['Laptop', 'Desktop', 'Impresora', 'Monitor'];  // Ejemplo de opciones para Tipo de equipo
-      marcas = ['HP', 'Dell', 'Lenovo', 'Acer', 'Asus'];  // Ejemplo de opciones para Marca
+      tiposEquipos = ['Laptop', 'PC Escritorio', 'Tablet', 'Celular'];  
+      marcasLaptop = ['HP', 'Dell', 'Lenovo', 'Acer', 'Asus', 'Toshiba'];
+      marcasDesktop = ['Ensamble','HP', 'Dell', 'Compaq','IBM']; 
+      marcasCelulares = ['Samsung', 'Xiaomi', 'Motorola', 'Huawei', 'Apple'];
 
       hoy: string = '';
 
   cargaImagen = false;
-
       private overlayContainer: OverlayContainer
-      constructor(private fb: FormBuilder, private folioService: FolioService,private dialogService: DialogService) {
+
+      // Variable que usará el select dinámico
+marcasActuales: string[] = [];
+
+isLaptop = false; // para mostrar los radiobuttons
+isDesktop = false;
+isCelular = false;
+isTablet = false;
+
+encendido: boolean | null = null;
+traeCargador: boolean | null = null;
+mostrarModeloSerie = false;
+
+      constructor(private fb: FormBuilder, private folioService: FolioService,private dialogService: DialogService, private cdr: ChangeDetectorRef) {
       
     
   }
 
-  // Esta función puede ser utilizada para obtener un folio consecutivo
-  generarFolio() {
-    const fecha = new Date();
-    this.folioRamdon = `F${fecha.getFullYear()}-${Math.floor(Math.random() * 10000)}`;
-    this.folio.folio = this.folioRamdon
-   // this.formFolio.patchValue({ folioRamdon });
+
+  ngOnInit() {
+        const fecha = new Date();
+    this.hoy = fecha.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+
+  
+      this.formFolio = this.fb.group({
+      folio: [''],
+      fecha: [this.hoy],
+      numCliente: ['', Validators.required],
+      nombre: ['', Validators.required],
+      tipoEquipo: ['', Validators.required],
+      marca: ['', Validators.required],
+      modelo: ['', Validators.required],
+      numSerie: ['', Validators.required],
+       encendido: [null],      // nuevo
+  traeCargador: [null],   // nuevo
+  marcaCargador: [''],    // nuevo
+  numSerieCargador: [''] , // nuevo
+      comentarios: ['', Validators.maxLength(500)]
+    });
+    this.generarFolio();  // Genera el folio al iniciar el formulario
+    
   }
+  
+   generarFolio() {
+  const añoActual = new Date().getFullYear();
+console.log("generarFolio:");
+  this.folioService.getEndFolio().subscribe({
+  next: (ultimoFolio: string) => {
+     console.log("Folio recibido de API:", ultimoFolio); // "F2025-7931"
 
-  /*onSubmit() {
-    if (this.form.valid) {
-      console.log(this.form.value);
+    // Separar el folio en partes ["F2025", "7931"]
+    const partes = ultimoFolio.split('-');
+
+    let nuevoConsecutivo = 1;
+    const añoActual = new Date().getFullYear();
+
+    if (partes.length === 2) {
+      const ultimoConsecutivo = Number(partes[1]); // tomar solo la parte numérica
+      if (!isNaN(ultimoConsecutivo)) {
+        nuevoConsecutivo = ultimoConsecutivo + 1; // sumar 1
+      }
     }
-  }*/
 
-  /*  public creaFolio():void{
+    // Construir folio nuevo
+    const folioNuevo = `F${añoActual}-${nuevoConsecutivo}`;
+    this.formFolio.patchValue({ folio: folioNuevo });
+    console.log("Nuevo folio generado:", folioNuevo);
+  },
+  error: (err) => console.error("Error al obtener folio:", err)
+});
+}
 
-if (!this.folio.cliente) {
+
+ public creaFolio(): void {
+
+
+  if (!this.folio.cliente) {
     console.warn('Cliente no definido en folio');
     return;
   }
 
   const clienteId = this.formFolio.get('numCliente')?.value;
   if (!clienteId) {
-        swal.fire('','Debe seleccionar un cliente antes de crear el folio','warning')
+    Swal.fire('', 'Debe seleccionar un cliente antes de crear el folio', 'warning');
     return;
   }
 
-  console.log("cliente.id: " + this.folio.cliente.id);
-   
-     
-    this.folio.folio = this.folioRamdon;  
-    this.folio.fecha = this.date;
-    this.folio.tipoEquipo = this.verSeleccion;
-    this.folio.marca =  this.verSeleccionMarca;
+   // Validar campos requeridos
+  const camposRequeridos = [
+    { nombre: 'Tipo de Equipo', valor: this.formFolio.get('tipoEquipo')?.value },
+    { nombre: 'Marca', valor: this.formFolio.get('marca')?.value },
+    { nombre: 'Modelo', valor: this.formFolio.get('modelo')?.value },
+    { nombre: 'Serie', valor: this.formFolio.get('numSerie')?.value },
+  ];
+
+  const campoVacio = camposRequeridos.find(c => !c.valor || c.valor.toString().trim() === '');
+  if (campoVacio) {
+    Swal.fire('Campos incompletos', `Debe completar el campo: ${campoVacio.nombre}`, 'warning');
+    return;
+  }
   
-      this.folioService.creaFolio(this.folio).subscribe(
-       response => {
-        swal.fire({
-          title: 'Confirmacion',
-          text: "¿Desea cargar imagenes para el folio " + this.folio.id+ " ?",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Si',
-          cancelButtonText: 'No'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            this.cargaImagen=true;
-            this.formFolio.reset();
+  this.folio.folio = this.formFolio.get('folio')?.value;
+  this.folio.fecha = this.date;
+  this.folio.tipoEquipo = this.formFolio.get('tipoEquipo')?.value;
+  this.folio.marca = this.formFolio.get('marca')?.value;
+  
+  this.folio.numSerie = this.formFolio.get('numSerie')?.value;
+  this.folio.modelo = this.formFolio.get('modelo')?.value;
 
-  Swal.fire({
-    title: 'Subir Imágenes',
-    html: `
-      <input type="file" id="inputImagenes" class="swal2-input" accept="image/*" multiple>
-      <div id="previewContainer" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:15px;"></div>
-    `,
-    showCancelButton: true,
-    confirmButtonText: 'Subir',
-    cancelButtonText: 'Cancelar',
-    width: 600,
-    didOpen: () => {
-      const input = document.getElementById('inputImagenes') as HTMLInputElement;
-      const previewContainer = document.getElementById('previewContainer') as HTMLElement;
+  this.folio.encendido = this.formFolio.get('encendido')?.value;
+this.folio.traeCargador = this.formFolio.get('traeCargador')?.value;
+this.folio.marcaCargador = this.formFolio.get('marcaCargador')?.value;
+this.folio.numSerieCargador = this.formFolio.get('numSerieCargador')?.value;
 
-      input.addEventListener('change', () => {
-        previewContainer.innerHTML = ''; // Limpiar previsualización
-        const files = input.files;
-        if (files) {
-          Array.from(files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = e => {
-              const img = document.createElement('img');
-              img.src = e.target?.result as string;
-              img.style.width = '100px';
-              img.style.height = '100px';
-              img.style.objectFit = 'cover';
-              img.style.borderRadius = '6px';
-              img.style.border = '1px solid #ccc';
-              previewContainer.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-          });
-        }
-      });
-    },
-    preConfirm: () => {
-      const input = document.getElementById('inputImagenes') as HTMLInputElement;
-      const files = input.files;
-      if (!files || files.length === 0) {
-        Swal.showValidationMessage('Selecciona al menos una imagen antes de continuar');
-        return false;
+  this.folioService.creaFolio(this.folio).subscribe({
+  next: (response) => {
+    // Primer Swal de confirmación antes de preguntar por imágenes
+    Swal.fire({
+      title: 'Folio creado',
+      text: `El folio ${response.folio} se creó correctamente. ¿Desea continuar?`,
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Preguntar si desea cargar imágenes
+        this.preguntarCargarImagenes(response.folio);
+      } else {
+        this.formFolio.reset();
+        this.ngOnInit();
       }
-      return Array.from(files);
-    }
-  }).then(res => {
-    if (result.isConfirmed) {
-  this.cargaImagen = true;
-  this.formFolio.reset();
+    });
+  },
+  error: (err) => {
+    console.error(err);
+    Swal.fire('Error', 'No se pudo crear el folio', 'error');
+  }
+});
 
+
+}
+
+// Función auxiliar para manejar la carga de imágenes
+private preguntarCargarImagenes(folio: string): void {
+  Swal.fire({
+    title: 'Confirmación',
+    text: `¿Desea cargar imágenes para el folio ${folio}?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, cargar imágenes',
+    cancelButtonText: 'No'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.mostrarSelectorImagenes(folio);
+    } else {
+      this.formFolio.reset();
+      this.ngOnInit();
+    }
+  });
+}
+
+// Función auxiliar para mostrar selector de imágenes con previsualización
+private mostrarSelectorImagenes(folio: string): void {
   Swal.fire({
     title: 'Subir Imágenes',
     html: `
       <input type="file" id="inputImagenes" class="swal2-input" accept="image/*" multiple>
-      <div id="previewContainer" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:15px;"></div>
+      <div id="previewContainer" 
+           style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:15px;">
+      </div>
     `,
     showCancelButton: true,
     confirmButtonText: 'Subir',
@@ -185,7 +248,7 @@ if (!this.folio.cliente) {
       const previewContainer = document.getElementById('previewContainer') as HTMLElement;
 
       input.addEventListener('change', () => {
-        previewContainer.innerHTML = ''; // Limpiar previsualización
+        previewContainer.innerHTML = '';
         const files = input.files;
         if (files) {
           Array.from(files).forEach(file => {
@@ -217,6 +280,9 @@ if (!this.folio.cliente) {
   }).then(res => {
     if (res.isConfirmed && res.value) {
       const files: File[] = res.value;
+      const formData = new FormData();
+      formData.append('folio', folio);
+      files.forEach(file => formData.append('files', file));
 
       Swal.fire({
         title: 'Subiendo imágenes...',
@@ -224,165 +290,20 @@ if (!this.folio.cliente) {
         allowOutsideClick: false
       });
 
-      // Convertir archivos a base64 y enviarlos
-      const promesas = files.map(file => this.convertirABase64(file));
-
-      Promise.all(promesas).then(base64Imgs => {
-        const payload = base64Imgs.map(base64 => ({
-         folio: this.folio.folio, 
-          base64: base64.split(',')[1] // eliminamos el prefijo "data:image/png;base64,"
-        }));
-
-        this.folioService.subirMultiplesImagenes(payload).subscribe({
-          next: (res) => {
-            Swal.fire('Éxito', 'Las imágenes se subieron correctamente', 'success');
-          },
-          error: (err) => {
-            console.error(err);
-            Swal.fire('Error', 'Ocurrió un error al subir las imágenes', 'error');
-          }
-        });
-      });
-    }
-  });
-
-}
-  });
-
-          }else{
-            this.formFolio.reset();
-            this.ngOnInit();
-          }
-        })
-       }
-        
-      )
-    }*/
-
-      public creaFolio(): void {
-
-  if (!this.folio.cliente) {
-    console.warn('Cliente no definido en folio');
-    return;
-  }
-
-  const clienteId = this.formFolio.get('numCliente')?.value;
-  if (!clienteId) {
-    Swal.fire('', 'Debe seleccionar un cliente antes de crear el folio', 'warning');
-    return;
-  }
-
-  this.folio.folio = this.folioRamdon;
-  this.folio.fecha = this.date;
-  this.folio.tipoEquipo = this.verSeleccion;
-  this.folio.marca = this.verSeleccionMarca;
-
-  this.folioService.creaFolio(this.folio).subscribe(
-    response => {
-      Swal.fire({
-        title: 'Confirmación',
-        text: `¿Desea cargar imágenes para el folio ${response.folio}?`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, cargar imágenes',
-        cancelButtonText: 'No'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.formFolio.reset();
-
-          Swal.fire({
-            title: 'Subir Imágenes',
-            html: `
-              <input type="file" id="inputImagenes" class="swal2-input" accept="image/*" multiple>
-              <div id="previewContainer" 
-                   style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:15px;">
-              </div>
-            `,
-            showCancelButton: true,
-            confirmButtonText: 'Subir',
-            cancelButtonText: 'Cancelar',
-            width: 600,
-            didOpen: () => {
-              const input = document.getElementById('inputImagenes') as HTMLInputElement;
-              const previewContainer = document.getElementById('previewContainer') as HTMLElement;
-
-              input.addEventListener('change', () => {
-                previewContainer.innerHTML = '';
-                const files = input.files;
-                if (files) {
-                  Array.from(files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = e => {
-                      const img = document.createElement('img');
-                      img.src = e.target?.result as string;
-                      img.style.width = '100px';
-                      img.style.height = '100px';
-                      img.style.objectFit = 'cover';
-                      img.style.borderRadius = '6px';
-                      img.style.border = '1px solid #ccc';
-                      previewContainer.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                  });
-                }
-              });
-            },
-            preConfirm: () => {
-              const input = document.getElementById('inputImagenes') as HTMLInputElement;
-              const files = input.files;
-              if (!files || files.length === 0) {
-                Swal.showValidationMessage('Selecciona al menos una imagen antes de continuar');
-                return false;
-              }
-              return Array.from(files);
-            }
-          }).then(res => {
-            if (res.isConfirmed && res.value) {
-              const files: File[] = res.value;
-
-              Swal.fire({
-                title: 'Subiendo imágenes...',
-                didOpen: () => Swal.showLoading(),
-                allowOutsideClick: false
-              });
-
-
-
-              const formData = new FormData();
-              formData.append('folio',this.folio.folio); // o this.folio.folio
-              files.forEach(file => formData.append('files', file));
-
-// Depuración
-/*console.log('Folio:', formData.get('folio'));
-console.log('Archivos:');
-files.forEach((file, i) => console.log(i, file.name));*/
-              this.folioService.subirMultiplesImagenes(formData).subscribe({
-                next: () => {
-                  Swal.fire('Éxito', 'Las imágenes se subieron correctamente', 'success');
-                },
-                error: (err) => {
-                  console.error(err);
-                  Swal.fire('Error', 'Ocurrió un error al subir las imágenes', 'error');
-                }
-              });
-            }
-          });
-        } else {
+      this.folioService.subirMultiplesImagenes(formData).subscribe({
+        next: () => {
+          Swal.fire('Éxito', 'Las imágenes se subieron correctamente', 'success');
           this.formFolio.reset();
           this.ngOnInit();
+        },
+        error: (err) => {
+          console.error(err);
+          Swal.fire('Error', 'Ocurrió un error al subir las imágenes', 'error');
         }
       });
-    },
-    error => {
-      console.error(error);
-      Swal.fire('Error', 'No se pudo crear el folio', 'error');
     }
-  );
+  });
 }
-
-
     // Convierte File → Base64
 private convertirABase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -393,33 +314,10 @@ private convertirABase64(file: File): Promise<string> {
   });
 }
 
-  ngOnInit() {
-        const fecha = new Date();
-       //  const hoy = new Date();
-    this.hoy = fecha.toISOString().split('T')[0]; // Formato YYYY-MM-DD
-
-  
-      this.formFolio = this.fb.group({
-      folio: [`F${fecha.getFullYear()}-${Math.floor(Math.random() * 10000)}`],  // Este será el consecutivo, lo podemos dejar vacío al inicio
-      //fecha: [new Date(), Validators.required],
-      fecha: [this.hoy],
-      numCliente: ['', Validators.required],
-      nombre: ['', Validators.required],
-      tipoEquipo: ['', Validators.required],
-      marca: ['', Validators.required],
-      modelo: ['', Validators.required],
-      numSerie: ['', Validators.required],
-      comentarios: ['', Validators.maxLength(500)]
-    });
-    this.generarFolio();  // Genera el folio al iniciar el formulario
-    
-  }
-
-  
+ 
 
   nuevoCliente() {
     this.btnGuardar = false;
-  //  this.cliente = {};
     this.submitted = false;
     this.clientDialog = true;
 }
@@ -458,6 +356,59 @@ addClient(){
         this.folio.cliente = clienteSeleccionado;
       }
     });
+}
+
+
+
+onTipoEquipoChange(tipo: string) {
+  // Limpiar valores previos
+  this.formFolio.patchValue({ marca: '', modelo: '', numSerie: '' });
+
+  // Ajustar marcas dinámicas
+  if (tipo === 'Laptop') {
+    this.marcasActuales = this.marcasLaptop;
+    this.isLaptop = true;
+    this.isDesktop = false;
+    this.isCelular = false;
+    
+    // Para Laptop siempre mostrar modelo y numSerie
+    this.mostrarModeloSerie = true;
+  } else if (tipo === 'PC Escritorio') {
+    this.marcasActuales = this.marcasDesktop;
+    this.isLaptop = false;
+    this.isDesktop = true;
+    this.isCelular = false;
+
+    // Para PC Escritorio, solo mostrar si marca ≠ Ensamble (evaluar luego en onMarcaChange)
+    this.mostrarModeloSerie = false;
+  } else if (tipo === 'Celular') {
+    this.marcasActuales = this.marcasCelulares;
+    this.isLaptop = false;
+    this.isDesktop = false;
+    this.isCelular = true;
+    this.mostrarModeloSerie = false;
+  } else {
+    this.marcasActuales = [];
+    this.isLaptop = false;
+    this.isDesktop = false;
+    this.isCelular = false;
+    this.mostrarModeloSerie = false;
+  }
+}
+
+onMarcaChange(marca: string) {
+  const tipo = this.formFolio.get('tipoEquipo')?.value;
+
+  // Para Laptop ya está siempre visible
+  // Para PC Escritorio, mostrar solo si Marca ≠ Ensamble
+  if (tipo === 'PC Escritorio') {
+    this.mostrarModeloSerie = marca !== 'Ensamble';
+  }
+
+  // Limpiar campos si no se debe mostrar
+  if (!this.mostrarModeloSerie) {
+    this.formFolio.patchValue({ modelo: '', numSerie: '' });
+  }
 }
 
 }

@@ -47,8 +47,8 @@ private httpHeaders = new HttpHeaders({
     console.log("numSerie in service: " + folio.numSerie);
     console.log("Comentario in service: " + folio.comentarios);*/
   console.log("JsonFolio: " + folio)
-  //  return this.http.post<Folio>('http://localhost:8080/api/guardarFolio',folio,{headers:this.httpHeaders})
-    return this.http.post<Folio>('https://shessmat-backend-production.up.railway.app/api/guardarFolio',folio,{headers:this.httpHeaders})
+    return this.http.post<Folio>('http://localhost:8080/api/guardarFolio',folio,{headers:this.httpHeaders})
+   // return this.http.post<Folio>('https://shessmat-backend-production.up.railway.app/api/guardarFolio',folio,{headers:this.httpHeaders})
   }
 
   exportPdf(elementPDF:FolioModel):Observable<Blob>{
@@ -80,11 +80,9 @@ private httpHeaders = new HttpHeaders({
 
 
  
-  getEndFolio(): Observable<number> {
-    return this.http.get('api/getEndFolio').pipe(
-      map(response => response as number)
-    );
-  }
+ getEndFolio(): Observable<string> {
+  return this.http.get('http://localhost:8080/api/getEndFolio', { responseType: 'text' });
+}
 
 
   getByFiltros(filtros:FolioModel): Observable<Folio[]> {
@@ -112,8 +110,8 @@ private httpHeaders = new HttpHeaders({
 
     subirMultiplesImagenes(formData: FormData): Observable<any> {
       console.log('Folio:', formData.get('folio'));
- // return this.http.post('http://localhost:8080/api/upload',formData);
-  return this.http.post('https://shessmat-backend-production.up.railway.app/api/upload',formData);
+  return this.http.post('http://localhost:8080/api/upload',formData);
+ // return this.http.post('https://shessmat-backend-production.up.railway.app/api/upload',formData);
 }
 
 
