@@ -158,8 +158,7 @@ console.log("generarFolio:");
   const camposRequeridos = [
     { nombre: 'Tipo de Equipo', valor: this.formFolio.get('tipoEquipo')?.value },
     { nombre: 'Marca', valor: this.formFolio.get('marca')?.value },
-    { nombre: 'Modelo', valor: this.formFolio.get('modelo')?.value },
-    { nombre: 'Serie', valor: this.formFolio.get('numSerie')?.value },
+   
   ];
 
   const campoVacio = camposRequeridos.find(c => !c.valor || c.valor.toString().trim() === '');
@@ -386,7 +385,7 @@ onTipoEquipoChange(tipo: string) {
     this.isLaptop = false;
     this.isDesktop = false;
     this.isCelular = true;
-    this.mostrarModeloSerie = false;
+    this.mostrarModeloSerie = true;
   } else {
     this.marcasActuales = [];
     this.isLaptop = false;
