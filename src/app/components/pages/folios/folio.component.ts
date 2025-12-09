@@ -140,19 +140,19 @@ toggleFiltros() {
 nuevoFolio(): void {
   
      this.ref = this.dialogService.open(RecepcionEquipoComponent, {
-          header: 'Nueva Recepción de Equipo',
+          header: 'Nuevo folio',
           width: '50%',
           contentStyle: { overflow: 'auto' },
           closable: true,
           dismissableMask: true,
-          data: {accion: 'nuevo'} // si necesitas pasar algo al componente
+          data: {accion: 'nuevo'} 
         });
       }
 
       editarFolio(folio: any): void {
   // 1. Abrir el modal usando el DialogService
   this.ref = this.dialogService.open(RecepcionEquipoComponent, {
-    header: `Editar Recepción de Equipo: ${folio.folio}`, // Título dinámico
+    header: `Edicion de Folio: ${folio.folio}`, 
     width: '68%',
     contentStyle: { overflow: 'auto' },
     closable: true,

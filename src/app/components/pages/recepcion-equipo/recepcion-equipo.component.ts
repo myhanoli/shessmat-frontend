@@ -59,7 +59,7 @@ export class RecepcionEquipoComponent implements OnInit {
 
       formFolio: FormGroup;
       tiposEquipos = ['Laptop', 'PC Escritorio', 'Tablet', 'Celular'];  
-      marcasLaptop = ['HP', 'Dell', 'Lenovo', 'Acer', 'Asus', 'Toshiba'];
+      marcasLaptop = ['HP', 'Dell', 'Lenovo', 'Acer', 'Asus', 'Toshiba','Apple','Huawei'];
       marcasDesktop = ['Ensamble','HP', 'Dell', 'Compaq','IBM']; 
       marcasCelulares = ['Samsung', 'Xiaomi', 'Motorola', 'Huawei', 'Apple','Honor'];
 
@@ -97,7 +97,7 @@ mostrarModeloSerie = false;
   
       this.formFolio = this.fb.group({
       folio: [''],
-      fecha: [this.hoy],
+      fecha: [{ value: this.hoy, disabled: true }],
       numCliente: ['', Validators.required],
       nombre: ['', Validators.required],
       tipoEquipo: ['', Validators.required],
@@ -115,29 +115,45 @@ mostrarModeloSerie = false;
    
     if (this.config.data && this.config.data.accion === 'editar') {
             const folioAEditar = this.config.data.folio;
-            
+             this.formFolio.get('fecha')?.enable();
+
+            this.formFolio.patchValue({  fecha: folioAEditar.fecha });
             // 1. Inicializar el formulario con los datos del folio
             this.formFolio.patchValue({
                 folio: folioAEditar.folio,
-                fecha: folioAEditar.fecha,
+               // fecha: folioAEditar.fecha,
                 numCliente: folioAEditar.cliente.id, // Asumiendo que el cliente tiene un ID
                 nombre: `${folioAEditar.cliente.nombre} ${folioAEditar.cliente.apellidoPat}`,
                 tipoEquipo: folioAEditar.tipoEquipo,
-                marca: folioAEditar.marca,
+               /* marca: folioAEditar.marca,
                 modelo: folioAEditar.modelo,
-                numSerie: folioAEditar.numSerie,
+                numSerie: folioAEditar.numSerie,*/
                 encendido: folioAEditar.encendido,
                 traeCargador: folioAEditar.traeCargador,
                 marcaCargador: folioAEditar.marcaCargador,
                 numSerieCargador: folioAEditar.numSerieCargador,
                 comentarios: folioAEditar.comentarios
             });
+
+           
             
             // 2. Ejecutar la lógica de cambio de tipo de equipo para cargar las marcas correctas
             this.onTipoEquipoChange(folioAEditar.tipoEquipo);
+
+            this.formFolio.patchValue({
+        marca: folioAEditar.marca,
+        modelo: folioAEditar.modelo,
+                numSerie: folioAEditar.numSerie,
+    });
+
             
             // 3. Establecer el ID del folio en la instancia local (necesario para la API de actualización)
             this.folio = folioAEditar; 
+
+            this.formFolio.get('fecha')?.valueChanges.subscribe(v => {
+  console.log("FECHA CAMBIÓ A:", v);
+});
+
         } else {
             // Si es 'nuevo', ejecutar la lógica normal de inicialización (generarFolio)
             this.generarFolio();
@@ -204,11 +220,12 @@ console.log("generarFolio:");
   const campoVacio = camposRequeridos.find(c => !c.valor || c.valor.toString().trim() === '');
   if (campoVacio) {
     Swal.fire('Campos incompletos', `Debe completar el campo: ${campoVacio.nombre}`, 'warning');
+   
     return;
   }
   
   this.folio.folio = this.formFolio.get('folio')?.value;
-  this.folio.fecha = this.date;
+  this.folio.fecha = this.formFolio.get('fecha')?.value;
   this.folio.tipoEquipo = this.formFolio.get('tipoEquipo')?.value;
   this.folio.marca = this.formFolio.get('marca')?.value;
   

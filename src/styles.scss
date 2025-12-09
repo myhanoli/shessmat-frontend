@@ -32,3 +32,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   font-size: 18px;            /* Ajusta el tamaño del texto */
   height: 18px;               /* Ajusta la altura del campo */
 }
+
+.swal2-container {
+  z-index: 9999 !important;
+}
