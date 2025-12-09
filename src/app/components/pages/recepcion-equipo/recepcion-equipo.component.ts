@@ -24,7 +24,7 @@ import { Cliente2 } from 'src/app/interface/cliente2';
 
 import { CrudComponent } from '../crud/crud.component';
 import { IngresaclienteComponent } from '../../ingresaCliente/ingresacliente.component';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogRef,DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ClienteComponent } from '../clientes/cliente.component';
 import Swal from 'sweetalert2';
 import { ChangeDetectorRef } from '@angular/core';
@@ -80,14 +80,18 @@ encendido: boolean | null = null;
 traeCargador: boolean | null = null;
 mostrarModeloSerie = false;
 
-      constructor(private fb: FormBuilder, private folioService: FolioService,private dialogService: DialogService, private cdr: ChangeDetectorRef) {
+      constructor(private fb: FormBuilder, private folioService: FolioService,
+        private dialogService: DialogService, private cdr: ChangeDetectorRef,
+        private dialogRef: DynamicDialogRef,public config: DynamicDialogConfig) {
       
     
   }
 
 
   ngOnInit() {
-        const fecha = new Date();
+      
+    
+    const fecha = new Date();
     this.hoy = fecha.toISOString().split('T')[0]; // Formato YYYY-MM-DD
 
   
@@ -106,9 +110,41 @@ mostrarModeloSerie = false;
   numSerieCargador: [''] , // nuevo
       comentarios: ['', Validators.maxLength(500)]
     });
-    this.generarFolio();  // Genera el folio al iniciar el formulario
+    //this.generarFolio();  // Genera el folio al iniciar el formulario
     
-  }
+   
+    if (this.config.data && this.config.data.accion === 'editar') {
+            const folioAEditar = this.config.data.folio;
+            
+            // 1. Inicializar el formulario con los datos del folio
+            this.formFolio.patchValue({
+                folio: folioAEditar.folio,
+                fecha: folioAEditar.fecha,
+                numCliente: folioAEditar.cliente.id, // Asumiendo que el cliente tiene un ID
+                nombre: `${folioAEditar.cliente.nombre} ${folioAEditar.cliente.apellidoPat}`,
+                tipoEquipo: folioAEditar.tipoEquipo,
+                marca: folioAEditar.marca,
+                modelo: folioAEditar.modelo,
+                numSerie: folioAEditar.numSerie,
+                encendido: folioAEditar.encendido,
+                traeCargador: folioAEditar.traeCargador,
+                marcaCargador: folioAEditar.marcaCargador,
+                numSerieCargador: folioAEditar.numSerieCargador,
+                comentarios: folioAEditar.comentarios
+            });
+            
+            // 2. Ejecutar la lógica de cambio de tipo de equipo para cargar las marcas correctas
+            this.onTipoEquipoChange(folioAEditar.tipoEquipo);
+            
+            // 3. Establecer el ID del folio en la instancia local (necesario para la API de actualización)
+            this.folio = folioAEditar; 
+        } else {
+            // Si es 'nuevo', ejecutar la lógica normal de inicialización (generarFolio)
+            this.generarFolio();
+        }
+    }
+
+  
   
    generarFolio() {
   const añoActual = new Date().getFullYear();
@@ -134,6 +170,10 @@ console.log("generarFolio:");
     const folioNuevo = `F${añoActual}-${nuevoConsecutivo}`;
     this.formFolio.patchValue({ folio: folioNuevo });
     console.log("Nuevo folio generado:", folioNuevo);
+
+
+  
+
   },
   error: (err) => console.error("Error al obtener folio:", err)
 });
@@ -182,6 +222,7 @@ this.folio.numSerieCargador = this.formFolio.get('numSerieCargador')?.value;
 
   this.folioService.creaFolio(this.folio).subscribe({
   next: (response) => {
+    this.dialogRef.close(true);
     // Primer Swal de confirmación antes de preguntar por imágenes
     Swal.fire({
       title: 'Folio creado',
@@ -191,6 +232,7 @@ this.folio.numSerieCargador = this.formFolio.get('numSerieCargador')?.value;
       confirmButtonText: 'Aceptar',
       cancelButtonText: 'Cancelar'
     }).then((result) => {
+        
       if (result.isConfirmed) {
         // Preguntar si desea cargar imágenes
         this.preguntarCargarImagenes(response.folio);

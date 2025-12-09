@@ -66,7 +66,8 @@ export class ClientesService {
 
   }
   
-
-
+getEndNumCliente(): Observable<string> {
+  return this.http.get(environment.urlHost + 'api/ultimo-numero', { responseType: 'text' as const });
+}
 
 }

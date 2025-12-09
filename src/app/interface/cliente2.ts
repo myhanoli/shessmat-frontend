@@ -2,6 +2,7 @@ import { Folio } from "./Folio";
 
 export class Cliente2 {
     id: number;
+    numCliente?: string;
     nombre: string;
     apellidoPat: string;
     apellidoMat: string;

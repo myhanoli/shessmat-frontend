@@ -19,15 +19,15 @@ export class FolioService {
 private httpHeaders = new HttpHeaders({
 'Content-Type': 'application/json',
 'Accept': 'application/json',
-//'Access-Control-Allow-Origin': 'http://localhost:8080/'
-'Access-Control-Allow-Origin': 'https://shessmat-backend-production.up.railway.app/'
+'Access-Control-Allow-Origin': 'http://localhost:8080/'
+//'Access-Control-Allow-Origin': 'https://shessmat-backend-production.up.railway.app/'
 })
 
   constructor(private http: HttpClient) {
   }
 
   getFolios(): Observable<Folio[]> {
-    return this.http.get('api/listaFolios').pipe(
+    return this.http.get(environment.urlHost+'api/listaFolios').pipe(
       map(response => response as Folio[])
     );
   }
@@ -113,6 +113,7 @@ private httpHeaders = new HttpHeaders({
   return this.http.post('http://localhost:8080/api/upload',formData);
  // return this.http.post('https://shessmat-backend-production.up.railway.app/api/upload',formData);
 }
+
 
 
 }

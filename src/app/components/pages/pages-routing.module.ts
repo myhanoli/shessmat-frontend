@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
         { path: 'crud', loadChildren: () => import('./crud/crud.module').then(m => m.CrudModule) },
         { path: 'recepcion-equipo', loadChildren: () => import('./recepcion-equipo/recepcion-equipo.module').then(m => m.RecepcionEquipoModule) },
         { path: 'clientes', loadChildren: () => import('./clientes/cliente.module').then(m => m.ClienteModule) },
+        { path: 'folios', loadChildren: () => import('./folios/folio.module').then(m => m.FolioModule) },
         { path: 'timeline', loadChildren: () => import('./timeline/timelinedemo.module').then(m => m.TimelineDemoModule) },
         { path: '**', redirectTo: '/notfound' }
     ])],
