@@ -61,7 +61,7 @@ export class RecepcionEquipoComponent implements OnInit {
       tiposEquipos = ['Laptop', 'PC Escritorio', 'Tablet', 'Celular'];  
       marcasLaptop = ['HP', 'Dell', 'Lenovo', 'Acer', 'Asus', 'Toshiba'];
       marcasDesktop = ['Ensamble','HP', 'Dell', 'Compaq','IBM']; 
-      marcasCelulares = ['Samsung', 'Xiaomi', 'Motorola', 'Huawei', 'Apple'];
+      marcasCelulares = ['Samsung', 'Xiaomi', 'Motorola', 'Huawei', 'Apple','Honor'];
 
       hoy: string = '';
 
