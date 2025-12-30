@@ -28,6 +28,7 @@ import { DialogService, DynamicDialogRef,DynamicDialogConfig } from 'primeng/dyn
 import { ClienteComponent } from '../clientes/cliente.component';
 import Swal from 'sweetalert2';
 import { ChangeDetectorRef } from '@angular/core';
+import { FolioRequest } from 'src/app/interface/FolioRequest';
 
 @Component({
   
@@ -47,6 +48,7 @@ export class RecepcionEquipoComponent implements OnInit {
       submitted: boolean = false;
 
       folio:Folio = new Folio()
+      folioRequest:FolioRequest = new FolioRequest()
       cliente:Cliente2 = new Cliente2()
       
       verSeleccion: String;
@@ -79,6 +81,9 @@ isTablet = false;
 encendido: boolean | null = null;
 traeCargador: boolean | null = null;
 mostrarModeloSerie = false;
+
+folioId!: number;
+accion: 'crear' | 'editar' = 'crear';
 
       constructor(private fb: FormBuilder, private folioService: FolioService,
         private dialogService: DialogService, private cdr: ChangeDetectorRef,
@@ -115,6 +120,9 @@ mostrarModeloSerie = false;
    
     if (this.config.data && this.config.data.accion === 'editar') {
             const folioAEditar = this.config.data.folio;
+          this.accion = 'editar';
+        this.folioId = folioAEditar.id; // 🔑 CLAVE ABSOLUTA
+
              this.formFolio.get('fecha')?.enable();
 
             this.formFolio.patchValue({  fecha: folioAEditar.fecha });
@@ -122,8 +130,10 @@ mostrarModeloSerie = false;
             this.formFolio.patchValue({
                 folio: folioAEditar.folio,
                // fecha: folioAEditar.fecha,
-                numCliente: folioAEditar.cliente.id, // Asumiendo que el cliente tiene un ID
-                nombre: `${folioAEditar.cliente.nombre} ${folioAEditar.cliente.apellidoPat}`,
+              //  numCliente: folioAEditar.cliente.id, // Asumiendo que el cliente tiene un ID
+               // nombre: `${folioAEditar.cliente.nombre} ${folioAEditar.cliente.apellidoPat}`,
+                 numCliente: folioAEditar.clienteId, // Asumiendo que el cliente tiene un ID
+                nombre: `${folioAEditar.clienteNombre}`,
                 tipoEquipo: folioAEditar.tipoEquipo,
                /* marca: folioAEditar.marca,
                 modelo: folioAEditar.modelo,
@@ -155,6 +165,7 @@ mostrarModeloSerie = false;
 });
 
         } else {
+           this.accion = 'crear';
             // Si es 'nuevo', ejecutar la lógica normal de inicialización (generarFolio)
             this.generarFolio();
         }
@@ -199,10 +210,10 @@ console.log("generarFolio:");
  public creaFolio(): void {
 
 
-  if (!this.folio.cliente) {
+  /*if (!this.folioRequest.clienteId) {
     console.warn('Cliente no definido en folio');
     return;
-  }
+  }*/
 
   const clienteId = this.formFolio.get('numCliente')?.value;
   if (!clienteId) {
@@ -224,20 +235,21 @@ console.log("generarFolio:");
     return;
   }
   
-  this.folio.folio = this.formFolio.get('folio')?.value;
-  this.folio.fecha = this.formFolio.get('fecha')?.value;
-  this.folio.tipoEquipo = this.formFolio.get('tipoEquipo')?.value;
-  this.folio.marca = this.formFolio.get('marca')?.value;
+  this.folioRequest.folio = this.formFolio.get('folio')?.value;
+  this.folioRequest.fecha = this.formFolio.get('fecha')?.value;
+  this.folioRequest.tipoEquipo = this.formFolio.get('tipoEquipo')?.value;
+  this.folioRequest.marca = this.formFolio.get('marca')?.value;
   
-  this.folio.numSerie = this.formFolio.get('numSerie')?.value;
-  this.folio.modelo = this.formFolio.get('modelo')?.value;
+  this.folioRequest.numSerie = this.formFolio.get('numSerie')?.value;
+  this.folioRequest.modelo = this.formFolio.get('modelo')?.value;
 
-  this.folio.encendido = this.formFolio.get('encendido')?.value;
-this.folio.traeCargador = this.formFolio.get('traeCargador')?.value;
-this.folio.marcaCargador = this.formFolio.get('marcaCargador')?.value;
-this.folio.numSerieCargador = this.formFolio.get('numSerieCargador')?.value;
+  this.folioRequest.encendido = this.formFolio.get('encendido')?.value;
+this.folioRequest.traeCargador = this.formFolio.get('traeCargador')?.value;
+this.folioRequest.marcaCargador = this.formFolio.get('marcaCargador')?.value;
+this.folioRequest.numSerieCargador = this.formFolio.get('numSerieCargador')?.value;
+this.folioRequest.clienteId = this.formFolio.get('numCliente')?.value;
 
-  this.folioService.creaFolio(this.folio).subscribe({
+  this.folioService.creaFolio(this.folioRequest).subscribe({
   next: (response) => {
     this.dialogRef.close(true);
     // Primer Swal de confirmación antes de preguntar por imágenes
@@ -411,7 +423,7 @@ addClient(){
           numCliente: clienteSeleccionado.id,
           nombre: clienteSeleccionado.nombre
         });
-        this.folio.cliente = clienteSeleccionado;
+        this.folio.clienteId = clienteSeleccionado;
       }
     });
 }
@@ -468,5 +480,43 @@ onMarcaChange(marca: string) {
     this.formFolio.patchValue({ modelo: '', numSerie: '' });
   }
 }
+
+guardarFolio(): void {
+  if (this.accion === 'editar') {
+    this.actualizarFolio();
+  } else {
+    this.creaFolio();
+  }
+}
+
+actualizarFolio(): void {
+
+  const folioActualizar = {
+    id: this.folioId, 
+    folio: this.formFolio.get('folio')?.value,
+    fecha: this.formFolio.get('fecha')?.value,
+    tipoEquipo: this.formFolio.get('tipoEquipo')?.value,
+    marca: this.formFolio.get('marca')?.value,
+    modelo: this.formFolio.get('modelo')?.value,
+    numSerie: this.formFolio.get('numSerie')?.value,
+    encendido: this.formFolio.get('encendido')?.value,
+    traeCargador: this.formFolio.get('traeCargador')?.value,
+    marcaCargador: this.formFolio.get('marcaCargador')?.value,
+    numSerieCargador: this.formFolio.get('numSerieCargador')?.value,
+    comentarios: this.formFolio.get('comentarios')?.value,
+    clienteId: this.formFolio.get('numCliente')?.value
+  };
+
+  this.folioService.actualizarFolio(folioActualizar).subscribe({
+    next: () => {
+      Swal.fire('Actualizado', 'Folio actualizado correctamente', 'success');
+      this.dialogRef.close({ actualizado: true });
+    },
+    error: () => {
+      Swal.fire('Error', 'No se pudo actualizar el folio', 'error');
+    }
+  });
+}
+
 
 }

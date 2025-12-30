@@ -19,4 +19,8 @@ export class AuthService {
     this.isLoggedIn = false;
     this.userRole = '';
   }
+
+   getToken(): string {
+  return localStorage.getItem('token') || '';
+} 
 }

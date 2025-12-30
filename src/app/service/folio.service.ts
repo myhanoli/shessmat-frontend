@@ -9,6 +9,11 @@ import { TipoEquipo } from '../interface/TipoEquipo';
 import { FolioModel } from '../interface/FolioModel';
 import { FileModel } from '../interface/FileModel';
 import { FolioAprobadosModel } from '../interface/FoliosAprobadosModel';
+import { FolioRequest } from '../interface/FolioRequest';
+import { AuthService } from './auth-service.service';
+import { HistorialEstatus } from '../model/historialEstatus';
+
+
 
 
 @Injectable({
@@ -23,8 +28,10 @@ private httpHeaders = new HttpHeaders({
 //'Access-Control-Allow-Origin': 'https://shessmat-backend-production.up.railway.app/'
 })
 
-  constructor(private http: HttpClient) {
-  }
+
+
+  constructor(private http: HttpClient, private authService: AuthService) { }
+
 
   getFolios(): Observable<Folio[]> {
     return this.http.get(environment.urlHost+'api/listaFolios').pipe(
@@ -40,16 +47,22 @@ private httpHeaders = new HttpHeaders({
   }
   
 
-  creaFolio(folio:Folio):Observable<Folio>{
-    console.log("cliente in service : " + folio.cliente.id);
+  creaFolio(folio:FolioRequest):Observable<Folio>{
+    console.log("cliente in service : " + folio.clienteId);
     /*console.log("marca in service : " + folio.marca);
     console.log("modelo in service: " + folio.modelo);
     console.log("numSerie in service: " + folio.numSerie);
     console.log("Comentario in service: " + folio.comentarios);*/
+    folio.idEstatus = 1;
   console.log("JsonFolio: " + folio)
     return this.http.post<Folio>('http://localhost:8080/api/guardarFolio',folio,{headers:this.httpHeaders})
    // return this.http.post<Folio>('https://shessmat-backend-production.up.railway.app/api/guardarFolio',folio,{headers:this.httpHeaders})
   }
+
+
+  actualizarFolio(folio: any) {
+  return this.http.put(`http://localhost:8080/api/folios/${folio.id}`, folio);
+}
 
   exportPdf(elementPDF:FolioModel):Observable<Blob>{
     console.log("elementPDF: " + elementPDF.folio)
@@ -113,6 +126,25 @@ private httpHeaders = new HttpHeaders({
   return this.http.post('http://localhost:8080/api/upload',formData);
  // return this.http.post('https://shessmat-backend-production.up.railway.app/api/upload',formData);
 }
+
+
+/*guardarSeguimiento(dto: { folioId: number; estatusId: number; comentario: string }): Observable<any> {
+  return this.http.post(`http://localhost:8080/api/seguimiento`, dto);
+}*/
+
+/*guardarSeguimiento(dto: { folioId: number; estatusId: number; comentario: string }): Observable<any> {
+  const headers = { 'Authorization': `Bearer ${this.authService.getToken()}` };
+  return this.http.post(`http://localhost:8080/api/seguimiento`, dto, { headers });
+}*/
+
+guardarSeguimiento(dto: { folioId: number; estatusId: number; comentario: string }): Observable<any> {
+  return this.http.post(`http://localhost:8080/api/seguimiento`, dto);
+}
+
+
+ getHistorial(folioId: number): Observable<HistorialEstatus[]> {
+		    return this.http.get<HistorialEstatus[]>(`http://localhost:8080/api/${folioId}/historial`);
+		  }
 
 
 

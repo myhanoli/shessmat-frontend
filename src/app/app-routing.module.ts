@@ -13,11 +13,9 @@ import { AuthGuard } from './components/auth/guards/auth-guard';
             {
                 path: 'layout', component: AppLayoutComponent,
                 children: [
+                    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
                     { path: 'login', loadChildren: () => import('./components/auth/login/login.module').then(m => m.LoginModule) },
-                    { path: 'dashboard', loadChildren: () => import('./components/dashboard/dashboard.module').then(m => m.DashboardModule),
-                    canActivate: [AuthGuard],
-				
-                     },
+                    { path: 'dashboard', loadChildren: () => import('./components/dashboard/dashboard.module').then(m => m.DashboardModule)},
                     { path: 'uikit', loadChildren: () => import('./components/uikit/uikit.module').then(m => m.UIkitModule) },
                     { path: 'documentation', loadChildren: () => import('./components/documentation/documentation.module').then(m => m.DocumentationModule) },
                     { path: 'pages', loadChildren: () => import('./components/pages/pages.module').then(m => m.PagesModule) },
@@ -28,7 +26,7 @@ import { AuthGuard } from './components/auth/guards/auth-guard';
                     { path: 'operacion-emisores', loadChildren: () => import('./components/operacion-emisores/operacion-emisores.module').then(m => m.OperacionEmisoresModule)},
                 ]
             },
-            { path: 'layout', loadChildren: () => import('./layout/app.layout.module').then(m => m.AppLayoutModule) },
+            //{ path: 'layout', loadChildren: () => import('./layout/app.layout.module').then(m => m.AppLayoutModule) },
             { path: 'auth', loadChildren: () => import('./components/auth/auth.module').then(m => m.AuthModule) },
             { path: 'landing', loadChildren: () => import('./components/landing/landing.module').then(m => m.LandingModule) },
             { path: 'notfound', component: NotfoundComponent },

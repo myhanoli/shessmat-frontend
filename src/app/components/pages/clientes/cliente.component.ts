@@ -238,6 +238,7 @@ export class ClienteComponent implements OnInit {
 
 
     seleccionarCliente(cliente: any) {
+      console.log("El id del cliente es: " + cliente.id); 
     this.ref.close(cliente); // Retorna el cliente al componente que abrió el diálogo
   }
 

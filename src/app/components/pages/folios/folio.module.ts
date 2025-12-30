@@ -31,7 +31,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { CalendarModule } from 'primeng/calendar';
 import { FolioRoutingModule } from './folio-routing.module';
 import { FolioComponent } from './folio.component';
-
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { TimelineModule } from 'primeng/timeline';
 
 
 @NgModule({
@@ -67,7 +68,8 @@ import { FolioComponent } from './folio.component';
               MatTabsModule,
               MatSelectModule,
               MatFormFieldModule,
-              
+              AutoCompleteModule,
+              TimelineModule 
              
   ],
       declarations: [FolioComponent]

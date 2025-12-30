@@ -24,113 +24,129 @@
       </p-toolbar>
       
 
-      <div *ngIf="mostrarFiltros" class="mt-10 mb-12 flex justify-center">
-        <div class="w-full max-w-5xl p-6 bg-white shadow-lg rounded-lg">
-          
-          <form> 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-
-              <div>
-                <label for="folio-input" class="block text-sm font-medium text-gray-700">Folio</label>
-                <input 
-                  id="folio-input"
-                  type="text" 
-                  pInputText 
-                  [(ngModel)]="filtros.folio"
-                  name="folio"
-                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
-
-              <div>
-                <label for="cliente-input" class="block text-sm font-medium text-gray-700">Cliente</label>
-                <input 
-                  id="cliente-input"
-                  type="text" 
-                  pInputText 
-                  [(ngModel)]="filtros.cliente"
-                  name="cliente"
-                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
-
-              <div>
-                <label for="equipo-input" class="block text-sm font-medium text-gray-700">Equipo</label>
-                <input 
-                  id="equipo-input"
-                  type="text" 
-                  pInputText 
-                  [(ngModel)]="filtros.equipo"
-                  name="equipo"
-                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
-
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 items-end"> <div>
-                <label for="marca-input" class="block text-sm font-medium text-gray-700">Marca</label>
-                <input 
-                  id="marca-input"
-                  type="text" 
-                  pInputText 
-                  [(ngModel)]="filtros.marca"
-                  name="marca"
-                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                />
-              </div>
-
-             <div>
-  <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Creacion</label>
-  
-  <div class="grid grid-cols-2 gap-4 mt-1">
+     <div *ngIf="mostrarFiltros" class="mt-10 mb-12 flex justify-center">
+  <div class="w-full max-w-5xl p-6 bg-white shadow-lg rounded-lg">
     
-    <div>
-      <p-calendar 
-        [(ngModel)]="filtros.fechaInicio"
-        name="fechaInicio"
-        dateFormat="yy-mm-dd"
-        placeholder="Inicio" class="w-full"
-        [inputStyle]="{'width':'100%'}"
-      ></p-calendar>
-    </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
 
-    <div>
-      <p-calendar 
-        [(ngModel)]="filtros.fechaFin"
-        name="fechaFin"
-        dateFormat="yy-mm-dd"
-        placeholder="Fin" class="w-full"
-        [inputStyle]="{'width':'100%'}"
-      ></p-calendar>
-    </div>
+        <!-- FOLIO -->
+        <div>
+          <label for="folio-input" class="block text-sm font-medium text-gray-700">Folio</label>
+          <input 
+            id="folio-input"
+            type="text"
+            pInputText
+            [(ngModel)]="filtros.folio"
+            [ngModelOptions]="{ standalone: true }"
+            (onSelect)="filtros.equipo = $event.label"
+            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
 
+    
+        <div>
+          <label for="cliente-input" class="block text-sm font-medium text-gray-700">Cliente</label>
+          <input 
+            id="cliente-input"
+            type="text"
+            pInputText
+            [(ngModel)]="filtros.cliente"
+             [ngModelOptions]="{ standalone: true }"
+            
+            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+
+        <!-- EQUIPO -->
+        <div>
+          <label for="equipo-select" class="block text-sm font-medium text-gray-700">Equipo</label>
+          <p-autoComplete
+            [(ngModel)]="filtros.equipo"
+            [ngModelOptions]="{standalone: true}" 
+            [suggestions]="equipos"
+            (completeMethod)="cargarEquipos($event)"
+            field="label"
+            placeholder="Buscar equipo"
+            [dropdown]="true"
+            class="w-full"
+          ></p-autoComplete>
+        </div>
+
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 items-end">
+
+        <!-- MARCA -->
+        <div>
+          <label for="marca-select" class="block text-sm font-medium text-gray-700">Marca</label>
+          <p-autoComplete
+            [(ngModel)]="filtros.marca"
+            [ngModelOptions]="{standalone: true}" 
+            [suggestions]="marcas"
+            (completeMethod)="cargarMarcas($event)"
+            field="label"
+            placeholder="Buscar marca"
+            [dropdown]="true"
+            class="w-full"
+          ></p-autoComplete>
+        </div>
+
+        <!-- FECHA -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Creación</label>
+          <div class="grid grid-cols-2 gap-4 mt-1">
+            <div>
+              <p-calendar 
+                [(ngModel)]="filtros.fechaInicio"
+                 [ngModelOptions]="{ standalone: true }"
+                
+                dateFormat="yy-mm-dd"
+                placeholder="Inicio"
+                class="w-full"
+                [inputStyle]="{'width':'100%'}"
+              ></p-calendar>
+            </div>
+
+            <div>
+              <p-calendar 
+                [(ngModel)]="filtros.fechaFin"
+                 [ngModelOptions]="{ standalone: true }"
+                  
+                dateFormat="yy-mm-dd"
+                placeholder="Fin"
+                class="w-full"
+                [inputStyle]="{'width':'100%'}"
+              ></p-calendar>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTONES -->
+        <div class="flex items-end justify-center md:justify-end gap-4">
+          <button 
+            type="button" 
+            pButton pRipple 
+            label="Buscar" 
+            icon="pi pi-search"
+            class="p-button-primary w-full md:w-28" 
+            (click)="aplicarFiltros()"
+          ></button>
+
+          <button 
+            type="button" 
+            pButton pRipple 
+            label="Limpiar" 
+            icon="pi pi-times"
+            class="p-button-secondary w-full md:w-28"
+            (click)="limpiarFiltros()"
+          ></button>
+        </div>
+
+      </div>
+    
   </div>
 </div>
 
-              <div class="flex items-end justify-center md:justify-end gap-4">
-                <button 
-                  type="button" pButton pRipple 
-                  label="Buscar" 
-                  icon="pi pi-search"
-                  class="p-button-primary w-full md:w-28" 
-                  (click)="aplicarFiltros()">
-                </button>
-
-                <button 
-                  type="button" pButton pRipple 
-                  label="Limpiar" 
-                  icon="pi pi-times"
-                  class="p-button-secondary w-full md:w-28"
-                  (click)="limpiarFiltros()">
-                </button>
-              </div>
-
-            </div>
-          </form>
-
-        </div>
-      </div>
       
       
 
@@ -138,10 +154,10 @@
         <ng-template pTemplate="left">
           <div class="flex flex-wrap gap-2">
             <button pButton pRipple icon="pi pi-plus" class="p-button-success"
-              pTooltip="Agregar Cliente" showDelay="1000" hideDelay="300"
+              pTooltip="Agregar Folio" showDelay="1000" hideDelay="300"
               tooltipPosition="top" (click)="nuevoFolio()"></button>
             <button pButton pRipple icon="pi pi-trash" class="p-button-danger"
-              pTooltip="Eliminar Clientes" showDelay="1000" hideDelay="300"
+              pTooltip="Eliminar Folios" showDelay="1000" hideDelay="300"
               tooltipPosition="top" (click)="deleteSelectedProducts()"
               [disabled]="!selectedProducts || !selectedProducts.length"></button>
           </div>
@@ -152,7 +168,8 @@
         </ng-template>
       </p-toolbar>
 
-      <div class="mt-10 overflow-x-auto w-full h-[600px]"> <p-table #dt 
+      <div class="mt-10 overflow-x-auto w-full h-[600px]"> 
+        <p-table #dt 
           [value]="foliosFiltrados"
           [paginator]="true"
           [rows]="5"
@@ -169,6 +186,7 @@
               <th class="px-4 py-3 text-left">Modelo</th>
               <th class="px-4 py-3 text-left">N° Serie</th>
               <th class="px-4 py-3 text-left">Cliente</th>
+              <th class="px-4 py-3 text-center">Estatus</th>
               <th class="px-4 py-3 text-center">Acciones</th> </tr>
           </ng-template>
 
@@ -182,9 +200,23 @@
               <td class="px-4 py-2">{{ folio.modelo }}</td>
               <td class="px-4 py-2">{{ folio.numSerie }}</td>
               <td class="px-4 py-2">
-                {{ folio.cliente.numCliente }}
+                {{ folio.clienteNombre}}
               </td>
-
+<td class="px-4 py-2 text-center">
+  <span 
+     class="px-2 py-0.5 rounded text-white text-xs"
+    [ngClass]="{
+      'bg-blue-500': folio.estatusActual?.nombre === 'RECIBIDO',
+    'bg-yellow-500': folio.estatusActual?.nombre === 'EN DIAGNOSTICO',
+    'bg-orange-500': folio.estatusActual?.nombre === 'ESPERA AUTORIZACION',
+    'bg-purple-500': folio.estatusActual?.nombre === 'EN REPARACION',
+    'bg-green-500': folio.estatusActual?.nombre === 'LISTO PARA ENTREGA',
+    'bg-emerald-700': folio.estatusActual?.nombre === 'ENTREGADO',
+    'bg-red-600': folio.estatusActual?.nombre === 'CANCELADO'
+    }">
+    {{ folio.estatusActual?.nombre || 'Sin estatus' }}
+  </span>
+</td>
               <td class="px-4 py-2">
                 <div class="flex gap-2 justify-center"> <button 
                     pButton pRipple 
@@ -193,7 +225,14 @@
                     pTooltip="Editar"
                     (click)="editarFolio(folio)">
                   </button>
-
+ <!-- Seguimiento -->
+  <button
+    pButton
+    icon="pi pi-sync"
+    class="p-button-rounded p-button-info"
+    pTooltip="Seguimiento"
+    (click)="abrirSeguimiento(folio)">
+  </button>
                   <button 
                     pButton pRipple 
                     icon="pi pi-trash"
@@ -214,3 +253,95 @@
     </div>
   </div>
 </div>
+
+
+<p-dialog 
+  header="Seguimiento de folio {{ folioSeleccionado?.folio }}"
+  [(visible)]="mostrarSeguimiento"
+  [modal]="true"
+  [style]="{width: '600px'}" 
+  [baseZIndex]="10000"
+  >
+
+  <div *ngIf="folioSeleccionado">
+
+    
+
+    
+    <div class="mb-3">
+      <label class="font-semibold block mb-1">Estatus actual</label>
+
+
+
+      <span 
+        class="px-2 py-1 rounded text-white text-sm"
+        [ngClass]="{
+    'bg-blue-500': folioSeleccionado.estatusActual?.nombre === 'RECIBIDO',
+    'bg-yellow-500': folioSeleccionado.estatusActual?.nombre === 'EN DIAGNOSTICO',
+    'bg-orange-500': folioSeleccionado.estatusActual?.nombre === 'ESPERA AUTORIZACION',
+    'bg-purple-500': folioSeleccionado.estatusActual?.nombre === 'EN REPARACION',
+    'bg-green-500': folioSeleccionado.estatusActual?.nombre === 'LISTO PARA ENTREGA',
+    'bg-emerald-700': folioSeleccionado.estatusActual?.nombre === 'ENTREGADO',
+    'bg-red-600': folioSeleccionado.estatusActual?.nombre === 'CANCELADO'
+  }">
+  {{ folioSeleccionado.estatusActual?.nombre }}
+      </span>
+
+<p-timeline [value]="historial" align="right">
+  <ng-template pTemplate="content" let-item>
+    <div class="timeline-item text-center">
+      <p class="timeline-text">{{ item.comentario }}</p>
+      <p class="timeline-date">{{ item.fechaCambio | date:'short' }}</p>
+    </div>
+  </ng-template>
+</p-timeline>
+
+    </div>
+
+  <div class="mb-3">
+  <label class="font-semibold block mb-1">Nuevo estatus</label>
+  <p-dropdown
+    [options]="estatusOptions"
+    optionLabel="label"
+    optionValue="value"
+    [(ngModel)]="nuevoEstatus"
+    placeholder="Selecciona un estatus"
+    class="w-full">
+  </p-dropdown>
+</div>
+
+    
+    <div class="mb-3">
+      <label class="font-semibold block mb-1">Observaciones</label>
+      <textarea
+        pInputTextarea
+        [(ngModel)]="observacion"
+        rows="4"
+        class="w-full"
+        placeholder="Describe el avance o comentario...">
+      </textarea>
+    </div>
+
+    
+    <div class="flex justify-end gap-2 mt-4">
+      <button
+        pButton
+        label="Cancelar"
+        class="p-button-text"
+        (click)="cerrarModal()">
+      </button>
+
+      <button
+        pButton
+        label="Guardar avance"
+        icon="pi pi-save"
+        class="p-button-success"
+        [disabled]="!nuevoEstatus || !observacion"
+        (click)="guardarSeguimiento()">
+      </button>
+    </div>
+
+  </div>
+
+</p-dialog>
+
