@@ -16,6 +16,9 @@ import { RecepcionEquipoComponent } from '../recepcion-equipo/recepcion-equipo.c
 import { CatalogosService, DropdownOption } from 'src/app/service/catalogos.service';
 import { Opcion } from 'src/app/model/Opcion';
 import { HistorialEstatus } from 'src/app/model/historialEstatus';
+import { SeguimientoFolioDTO } from 'src/app/model/SeguimientoFolioDTO';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 
 @Component({
@@ -59,14 +62,18 @@ mostrarFiltros: boolean = false;
   folioSeleccionado: any = null;
   mostrarSeguimiento = false;
 
-//  estatusList: Estatus[] = [];
+
 
    estatusOptions: DropdownOption[] = [];
-   nuevoEstatus: string | null = null;
+   nuevoEstatus: any = null;
   observacion: string = '';
 
   
   historial: HistorialEstatus[] = [];
+
+  usoPiezas: boolean = false;
+piezas: { descripcion: string; costo: number }[] = [];
+manoObra: number = 0;
 
   constructor(private folioService: FolioService,private dialogService: DialogService,private catalogosService: CatalogosService) {}
 
@@ -88,12 +95,6 @@ this.foliosFiltrados = this.folios; // <-- aquí todavía está vacío
     
   }
 
-  /*cargarFolios() {
-    this.folioService.getFolios().subscribe(
-      data => {this.folios = data,
-      err => console.error('Error cargando folios', err)
-  });
-  }*/
  cargarFolios() {
   this.folioService.getFolios().subscribe({
     next: (data) => {
@@ -106,52 +107,6 @@ this.foliosFiltrados = this.folios; // <-- aquí todavía está vacío
   });
 }
 
-
- /* aplicarFiltros() {
-  this.foliosFiltrados = this.folios.filter(f => {
-
-    const clienteCompleto = (f.cliente?.nombre + ' ' + f.cliente?.apellidoPat)
-                              ?.toLowerCase() ?? '';
-
-                                const equipoFiltro = typeof this.filtros.equipo === 'string' 
-    ? this.filtros.equipo 
-    : this.filtros.equipo?.label;
-                              
-    return (
-
-      // FILTRO POR FOLIO
-      (!this.filtros.folio || 
-        f.folio?.toString().includes(this.filtros.folio)
-      )
-
-      // FECHA INICIO
-      && (!this.filtros.fechaInicio || 
-            new Date(f.fecha) >= new Date(this.filtros.fechaInicio)
-      )
-
-      // FECHA FIN
-      && (!this.filtros.fechaFin || 
-            new Date(f.fecha) <= new Date(this.filtros.fechaFin)
-      )
-
-      // EQUIPO
-      && (!this.filtros.equipo || 
-            f.tipoEquipo?.toLowerCase().includes(this.filtros.equipo.toLowerCase())
-      )
-    
-
-      // MARCA
-      && (!this.filtros.marca || 
-            f.marca?.toLowerCase().includes(this.filtros.marca.toLowerCase())
-      )
-
-      // CLIENTE (nombre + paterno)
-      && (!this.filtros.cliente ||
-            clienteCompleto.includes(this.filtros.cliente.toLowerCase())
-      )
-    );
-  });
-}*/
 
 aplicarFiltros() {
   
@@ -274,26 +229,42 @@ abrirSeguimiento(folio: any) {
   }
 
 
+
 guardarSeguimiento() {
   if (!this.nuevoEstatus || !this.observacion) return;
 
-  // Creamos un objeto literal directamente
-  const dto = {
+  // Preparamos el DTO con datos de cierre solo si es CERRADO
+  const dto: any = {
     folioId: this.folioSeleccionado.id,
-    estatusId: Number(this.nuevoEstatus),
-    comentario: this.observacion
+    estatusId: Number(this.nuevoEstatus.value),
+    comentario: this.observacion,
+    cierre: this.nuevoEstatus?.label === 'CERRADO' ? {
+      usoPiezas: this.usoPiezas,
+      piezas: this.piezas,
+      manoObra: this.manoObra,
+      total: this.calcularTotal()
+    } : null
   };
 
-  this.folioService.guardarSeguimiento(dto).subscribe(res => {
-    console.log('Estatus actualizado', res);
+  this.folioService.guardarSeguimiento(dto).subscribe({
+    next: (res) => {
+      // Actualizar estatus localmente
+      this.folioSeleccionado.estatusActual = this.estatusOptions.find(e => e.value === this.nuevoEstatus.value);
 
-    // Actualizamos localmente el estatusActual del folio
-    this.folioSeleccionado.estatusActual = this.estatusOptions.find(e => e.value === this.nuevoEstatus);
+      // Si el estatus es CERRADO, generar ticket automáticamente
+      if (this.nuevoEstatus?.label === 'CERRADO' && dto.cierre) {
+        this.generarTicketPDF(dto.cierre);  // <-- enviamos los datos de cierre
+      }
 
-    // Cerramos el modal y limpiamos campos
-    this.cerrarModal();
+      // Cerramos el modal
+      this.cerrarModal();
+    },
+    error: (err) => {
+      console.error('Error al guardar seguimiento:', err);
+    }
   });
 }
+
 
 
 cerrarModal() {
@@ -314,6 +285,107 @@ cerrarModal() {
 esCambioEstatus(item: any) {
   return item.estatusAnterior !== item.estatusNuevo;
 }
+
+agregarPieza() {
+  this.piezas.push({ descripcion: '', costo: 0 });
+}
+
+eliminarPieza(index: number) {
+  this.piezas.splice(index, 1);
+}
+
+calcularTotal(): number {
+  const totalPiezas = this.piezas.reduce(
+    (sum, p) => sum + (p.costo || 0), 0
+  );
+  return totalPiezas + (this.manoObra || 0);
+}
+
+
+
+generarTicketPDF(cierre: any) {
+  if (!this.folioSeleccionado) return;
+
+  const doc = new jsPDF({
+    unit: 'pt',
+    format: [226, 400]
+  });
+
+  let y = 20;
+  const lineHeight = 14;
+
+  // ----- TÍTULO -----
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('TALLER DE SERVICIO', 113, y, { align: 'center' });
+  y += lineHeight;
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Cierre de Folio', 113, y, { align: 'center' });
+  y += lineHeight + 5;
+
+  // ----- DATOS DEL FOLIO -----
+  const folioData = [
+    `Folio: ${this.folioSeleccionado.folio}`,
+    `Cliente: ${this.folioSeleccionado.clienteNombre}`,
+    `Equipo: ${this.folioSeleccionado.tipoEquipo}`,
+    `Marca: ${this.folioSeleccionado.marca}`,
+    `Modelo: ${this.folioSeleccionado.modelo}`,
+    `N° Serie: ${this.folioSeleccionado.numSerie}`,
+    `Estatus final: ${this.folioSeleccionado.estatusActual?.label}`
+  ];
+
+  folioData.forEach(line => {
+    doc.text(line, 10, y);
+    y += lineHeight;
+  });
+
+  y += 5;
+  doc.setLineWidth(0.5);
+  doc.line(10, y, 216, y);
+  y += 10;
+
+  // ----- PIEZAS UTILIZADAS -----
+  if (cierre.usoPiezas && cierre.piezas.length > 0) {
+    doc.setFont('helvetica', 'bold');
+    doc.text('Piezas utilizadas:', 10, y);
+    y += lineHeight;
+
+    doc.setFont('helvetica', 'normal');
+    cierre.piezas.forEach((p: any, i: number) => {
+      const descripcion = p.descripcion.length > 20 ? p.descripcion.slice(0, 20) + '...' : p.descripcion;
+      doc.text(`${i + 1}. ${descripcion}`, 10, y);
+      doc.text(`$${p.costo.toFixed(2)}`, 180, y, { align: 'right' });
+      y += lineHeight;
+    });
+
+    y += 5;
+    doc.setLineWidth(0.3);
+    doc.line(10, y, 216, y);
+    y += 10;
+  }
+
+  // ----- MANO DE OBRA Y TOTAL -----
+  doc.setFont('helvetica', 'bold');
+  doc.text('Mano de obra:', 10, y);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`$${cierre.manoObra.toFixed(2)}`, 180, y, { align: 'right' });
+  y += lineHeight;
+
+  doc.setFont('helvetica', 'bold');
+  doc.text('TOTAL REPARACIÓN:', 10, y);
+  doc.text(`$${cierre.total.toFixed(2)}`, 180, y, { align: 'right' });
+  y += lineHeight + 10;
+
+  // ----- FOOTER -----
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'italic');
+  doc.text('¡Gracias por su preferencia!', 113, y, { align: 'center' });
+
+  // ----- DESCARGAR PDF -----
+  doc.save(`Ticket_Folio_${this.folioSeleccionado.folio}.pdf`);
+}
+
 
 }
 

@@ -212,7 +212,8 @@
     'bg-purple-500': folio.estatusActual?.nombre === 'EN REPARACION',
     'bg-green-500': folio.estatusActual?.nombre === 'LISTO PARA ENTREGA',
     'bg-emerald-700': folio.estatusActual?.nombre === 'ENTREGADO',
-    'bg-red-600': folio.estatusActual?.nombre === 'CANCELADO'
+    'bg-red-600': folio.estatusActual?.nombre === 'CANCELADO',
+    'bg-gray-700': folio.estatusActual?.nombre === 'CERRADO'
     }">
     {{ folio.estatusActual?.nombre || 'Sin estatus' }}
   </span>
@@ -276,22 +277,23 @@
       <span 
         class="px-2 py-1 rounded text-white text-sm"
         [ngClass]="{
-    'bg-blue-500': folioSeleccionado.estatusActual?.nombre === 'RECIBIDO',
-    'bg-yellow-500': folioSeleccionado.estatusActual?.nombre === 'EN DIAGNOSTICO',
-    'bg-orange-500': folioSeleccionado.estatusActual?.nombre === 'ESPERA AUTORIZACION',
-    'bg-purple-500': folioSeleccionado.estatusActual?.nombre === 'EN REPARACION',
-    'bg-green-500': folioSeleccionado.estatusActual?.nombre === 'LISTO PARA ENTREGA',
-    'bg-emerald-700': folioSeleccionado.estatusActual?.nombre === 'ENTREGADO',
-    'bg-red-600': folioSeleccionado.estatusActual?.nombre === 'CANCELADO'
+  'bg-blue-500': folioSeleccionado?.estatusActual?.nombre === 'RECIBIDO',
+    'bg-yellow-500': folioSeleccionado?.estatusActual?.nombre === 'EN DIAGNOSTICO',
+    'bg-orange-500': folioSeleccionado?.estatusActual?.nombre === 'ESPERA AUTORIZACION',
+    'bg-purple-500': folioSeleccionado?.estatusActual?.nombre === 'EN REPARACION',
+    'bg-green-500': folioSeleccionado?.estatusActual?.nombre === 'LISTO PARA ENTREGA',
+    'bg-emerald-700': folioSeleccionado?.estatusActual?.nombre === 'ENTREGADO',
+    'bg-red-600': folioSeleccionado?.estatusActual?.nombre === 'CANCELADO',
+    'bg-gray-700': folioSeleccionado?.estatusActual?.nombre === 'CERRADO'
   }">
-  {{ folioSeleccionado.estatusActual?.nombre }}
+  {{ folioSeleccionado?.estatusActual?.nombre || 'Sin estatus' }}
       </span>
 
 <p-timeline [value]="historial" align="right">
   <ng-template pTemplate="content" let-item>
     <div class="timeline-item text-center">
       <p class="timeline-text">{{ item.comentario }}</p>
-      <p class="timeline-date">{{ item.fechaCambio | date:'short' }}</p>
+      <p class="timeline-date">{{ item.fechaCambio | date:'dd/MM/yyyy HH:mm' }}</p>
     </div>
   </ng-template>
 </p-timeline>
@@ -300,15 +302,83 @@
 
   <div class="mb-3">
   <label class="font-semibold block mb-1">Nuevo estatus</label>
+  
   <p-dropdown
-    [options]="estatusOptions"
-    optionLabel="label"
-    optionValue="value"
-    [(ngModel)]="nuevoEstatus"
-    placeholder="Selecciona un estatus"
-    class="w-full">
-  </p-dropdown>
+  [options]="estatusOptions"
+  optionLabel="label"
+  [(ngModel)]="nuevoEstatus"
+  placeholder="Selecciona un estatus"
+  class="w-full">
+</p-dropdown>
+
 </div>
+
+
+  <div *ngIf="nuevoEstatus?.label === 'CERRADO'" class="border-t mt-4 pt-4">
+
+  <h3 class="font-semibold mb-3">Cierre del folio</h3>
+
+  <!-- ¿Se usaron piezas? -->
+  <div class="mb-3">
+    <label class="block font-medium mb-1">¿Se usaron piezas?</label>
+    <p-radioButton
+  name="usoPiezas"
+  [value]="false"
+  [(ngModel)]="usoPiezas"
+  label="No">
+</p-radioButton>
+    <p-radioButton
+  name="usoPiezas"
+  [value]="true"
+  [(ngModel)]="usoPiezas"
+  label="Sí">
+</p-radioButton>
+  </div>
+
+  <!-- Lista de piezas -->
+  <div *ngIf="usoPiezas" class="mb-3">
+    <label class="font-medium block mb-1">Piezas utilizadas</label>
+
+    <div *ngFor="let pieza of piezas; let i = index" class="flex gap-2 mb-2">
+      <input pInputText placeholder="Descripción"
+        [(ngModel)]="pieza.descripcion" class="w-1/2" />
+
+      <input pInputText type="number" placeholder="Costo"
+        [(ngModel)]="pieza.costo" class="w-1/4" />
+
+      <button pButton icon="pi pi-trash"
+        class="p-button-danger p-button-text"
+        (click)="eliminarPieza(i)">
+      </button>
+    </div>
+
+    <button pButton label="Agregar pieza"
+      icon="pi pi-plus"
+      class="p-button-sm"
+      (click)="agregarPieza()">
+    </button>
+  </div>
+
+  <!-- Mano de obra -->
+  <div class="mb-3">
+    <label class="font-medium block mb-1">Mano de obra</label>
+    <input pInputText type="number"
+      [(ngModel)]="manoObra"
+      placeholder="Costo de mano de obra"
+      class="w-full" />
+  </div>
+
+  <!-- Total -->
+  <div class="mb-3">
+    <label class="font-semibold block mb-1">Total reparación</label>
+    <input pInputText type="number"
+      [value]="calcularTotal()"
+      disabled
+      class="w-full font-bold" />
+  </div>
+
+</div>
+
 
     
     <div class="mb-3">
@@ -324,6 +394,18 @@
 
     
     <div class="flex justify-end gap-2 mt-4">
+
+
+      <button
+  *ngIf="folioSeleccionado && folioSeleccionado?.estatusActual?.nombre === 'CERRADO'"
+  pButton
+  label="Generar Ticket"
+  icon="pi pi-file-pdf"
+  class="p-button-help"
+  (click)="generarTicketPDF()"
+  [disabled]="!folioSeleccionado">
+</button>
+      
       <button
         pButton
         label="Cancelar"

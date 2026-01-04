@@ -110,17 +110,6 @@ private httpHeaders = new HttpHeaders({
     }
 
 
-  /*  subirImagen(base64: string, folio: string): Observable<any> {
-    const body = { folio, base64 };
-    return this.http.post('api/upload',body,{headers:this.httpHeaders});
-  }
-
-  subirMultiplesImagenes(imagenes: { base64: string; folio: string }[]): Observable<any[]> {
-    // Envía todas las imágenes en paralelo
-    console.log('Se enviaron las imagenes con su folio')
-    return forkJoin(imagenes.map(img => this.subirImagen(img.base64, img.folio)));
-  }*/
-
     subirMultiplesImagenes(formData: FormData): Observable<any> {
       console.log('Folio:', formData.get('folio'));
   return this.http.post('http://localhost:8080/api/upload',formData);
@@ -128,14 +117,7 @@ private httpHeaders = new HttpHeaders({
 }
 
 
-/*guardarSeguimiento(dto: { folioId: number; estatusId: number; comentario: string }): Observable<any> {
-  return this.http.post(`http://localhost:8080/api/seguimiento`, dto);
-}*/
 
-/*guardarSeguimiento(dto: { folioId: number; estatusId: number; comentario: string }): Observable<any> {
-  const headers = { 'Authorization': `Bearer ${this.authService.getToken()}` };
-  return this.http.post(`http://localhost:8080/api/seguimiento`, dto, { headers });
-}*/
 
 guardarSeguimiento(dto: { folioId: number; estatusId: number; comentario: string }): Observable<any> {
   return this.http.post(`http://localhost:8080/api/seguimiento`, dto);
