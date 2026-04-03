@@ -25,12 +25,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     chartOptions2: any;
 
     pieData: any;
-pieOptions: any;
+    pieOptions: any;
 
-topClientesBarData: any;
-topClientesBarOptions: any;
+    topClientesBarData: any;
+    topClientesBarOptions: any;
 
-foliosDashboard: any[] = [];
+    foliosDashboard: any[] = [];
 
     subscription!: Subscription;
 
@@ -61,8 +61,8 @@ foliosDashboard: any[] = [];
         ];
 
         this.cargarTotalFolios2025();
-         this.cargarFoliosPorMes(2025);
-        this.cargarComparativa(this.anio1, this.anio2);
+         this.cargarFoliosPorMes(2026);
+        this.cargarComparativa(this.anio2, this.anio3);
         // this.cargarRankingClientes();
          this.cargarTop10Clientes();
 

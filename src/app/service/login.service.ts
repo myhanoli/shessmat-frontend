@@ -38,7 +38,8 @@ return structuredClone(this.user);
       tap( (userData) => {
         console.log(userData)
         localStorage.setItem("token", userData.token);
-        localStorage.setItem("user", userData.user);
+        // Almacenar el objeto user como JSON
+        localStorage.setItem("user", JSON.stringify(userData.user));
         this.currentUserData.next(userData.token);
         this.currentUserLoginOn.next(true);
       }),
@@ -49,6 +50,7 @@ return structuredClone(this.user);
 
   logout():void{
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     this.currentUserLoginOn.next(false);
   }
 

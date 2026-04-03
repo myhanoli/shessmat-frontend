@@ -63,7 +63,7 @@ export class RecepcionEquipoComponent implements OnInit {
       tiposEquipos = ['Laptop', 'PC Escritorio', 'Tablet', 'Celular'];  
       marcasLaptop = ['HP', 'Dell', 'Lenovo', 'Acer', 'Asus', 'Toshiba','Apple','Huawei'];
       marcasDesktop = ['Ensamble','HP', 'Dell', 'Compaq','IBM']; 
-      marcasCelulares = ['Samsung', 'Xiaomi', 'Motorola', 'Huawei', 'Apple','Honor'];
+      marcasCelulares = ['Samsung', 'Xiaomi', 'Motorola', 'Huawei', 'Apple','Honor','OPPO'];
 
       hoy: string = '';
 
@@ -247,6 +247,7 @@ console.log("generarFolio:");
 this.folioRequest.traeCargador = this.formFolio.get('traeCargador')?.value;
 this.folioRequest.marcaCargador = this.formFolio.get('marcaCargador')?.value;
 this.folioRequest.numSerieCargador = this.formFolio.get('numSerieCargador')?.value;
+this.folioRequest.comentarios = this.formFolio.get('comentarios')?.value;
 this.folioRequest.clienteId = this.formFolio.get('numCliente')?.value;
 
   this.folioService.creaFolio(this.folioRequest).subscribe({

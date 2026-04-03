@@ -1,6 +1,7 @@
 import { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { LayoutService } from '../../service/app.layout.service';
+import { RoleService } from '../../service/role.service';
 
 @Component({
     selector: 'app-menu',
@@ -10,9 +11,73 @@ export class AppMenuComponent implements OnInit {
 
     model: any[] = [];
 
-    constructor(public layoutService: LayoutService) { }
+    constructor(public layoutService: LayoutService, private roleService: RoleService) { }
 
     ngOnInit() {
+        // Construir items de Pages
+        const pagesItems = [
+            {
+                label: 'Soporte Tecnico',
+                icon: 'pi pi-fw pi-wrench',
+                items: [
+                    {
+                        label: 'Recepcion de equipos',
+                        icon: 'pi pi-fw pi-arrow-right',
+                        routerLink: ['/layout/pages/recepcion-equipo']
+                    },
+                    {
+                        label: 'Servicios',
+                        icon: 'pi pi-fw pi-arrow-left',
+                        routerLink: ['/layout/pages/folios']
+                    }
+                ]
+            },
+            {
+                label: 'Catalogos',
+                icon: 'pi pi-fw pi-briefcase',
+                items: [
+                    {
+                        label: 'Clientes',
+                        icon: 'pi pi-fw pi-user',
+                        routerLink: ['/layout/pages/clientes']
+                    },
+                    {
+                        label: 'Marcas',
+                        icon: 'pi pi-fw pi-tag'
+                    },
+                    {
+                        label: 'Tipo de Equipo',
+                        icon: 'pi pi-fw pi-minus-circle'
+                    },
+                    {
+                        label: 'Servicios',
+                        icon: 'pi pi-fw pi-file-edit'
+                    }
+                ]
+            },
+            {
+                label: 'Mantenimiento',
+                icon: 'pi pi-fw pi-user',
+                items: []
+            }
+        ];
+
+        // Agregar Administracion solo si el usuario es ADMIN
+        if (this.roleService.isAdmin()) {
+            pagesItems.push({
+                label: 'Administracion',
+                icon: 'pi pi-fw pi-cog',
+                items: [
+                    {
+                        label: 'Usuarios',
+                        icon: 'pi pi-fw pi-users',
+                        routerLink: ['/layout/pages/crud']
+                    }
+                ]
+            });
+        }
+
+        // Construir el modelo completo
         this.model = [
             {
                 label: 'Home',
@@ -20,88 +85,20 @@ export class AppMenuComponent implements OnInit {
                     { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/layout/dashboard'] }
                 ]
             },
-           
             {
                 label: 'Pages',
                 icon: 'pi pi-fw pi-briefcase',
-                items: [
-                    {
-                        label: 'Soporte Tecnico',
-                        icon: 'pi pi-fw pi-wrench',
-                        items: [
-                            {
-                                label: 'Recepcion de equipos',
-                                icon: 'pi pi-fw pi-arrow-right',
-                               // routerLink: ['/auth/login']
-                               routerLink: ['/layout/pages/recepcion-equipo']
-                            },
-                            {
-                                label: 'Servicios',
-                                icon: 'pi pi-fw pi-arrow-left',
-                              routerLink: ['/layout/pages/folios']
-                            },
-                            
-
-                        ]
-                    },{
-                        label: 'Catalogos',
-                        icon: 'pi pi-fw pi-briefcase',
-                        items: [
-                            {
-                                label: 'Clientes',
-                                icon: 'pi pi-fw pi-user',
-                                routerLink: ['/layout/pages/clientes']
-                            },
-                            {
-                                label: 'Marcas',
-                                icon: 'pi pi-fw pi-tag',
-                               // routerLink: ['/auth/error']
-                            },
-                            {
-                                label: 'Tipo de Equipo',
-                                icon: 'pi pi-fw pi-minus-circle',
-                               // routerLink: ['/auth/error']
-                            },
-                            {
-                                label: 'Servicios',
-                                icon: 'pi pi-fw pi-file-edit',
-                               // routerLink: ['/auth/error']
-                            }
-
-                        ]
-                    },
-                    {
-                        label: 'Mantenimiento',
-                        icon: 'pi pi-fw pi-user',
-                        items: [
-                            
-                            
-                        ]
-                    },
-                    {
-                        label: 'Administracion',
-                        icon: 'pi pi-fw pi-cog',
-                        items: [
-                            {
-                                label: 'Usuarios',
-                                icon: 'pi pi-fw pi-users',
-                                routerLink: ['/layout/pages/crud']
-                            },
-                            /*{
-                                label: 'Historicas',
-                                icon: 'pi pi-fw pi-times-circle',
-                                routerLink: ['/uikit/charts']
-                            },
-                            {
-                                label: 'Cambio de posicion',
-                                icon: 'pi pi-fw pi-lock',
-                                routerLink: ['/pages/timeline']
-                            }*/
-                        ]
-                    }
-                ]
-            },
-           
+                items: pagesItems
+            }
         ];
+    }
+
+    /**
+     * Verifica si el usuario actual tiene un rol específico
+     * @param role El rol a verificar
+     * @returns true si el usuario tiene el rol
+     */
+    hasRole(role: string): boolean {
+        return this.roleService.hasRole(role);
     }
 }
