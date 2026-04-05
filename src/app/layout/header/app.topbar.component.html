@@ -34,7 +34,7 @@
        [ngClass]="{'flex': layoutService.state.profileSidebarVisible, 'hidden': !layoutService.state.profileSidebarVisible}">
     
     <!-- Usuario -->
-    <a class="user-info text-gray-800 text-sm font-medium">{{user}}</a>
+    <a class="user-info text-gray-800 text-sm font-medium">{{user.email}}</a>
 
     <!-- Logout -->
     <div class="logout-container">

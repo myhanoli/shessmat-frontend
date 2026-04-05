@@ -177,120 +177,140 @@
 
       <!-- Diálogo -->
       <p-dialog
-        [(visible)]="clientDialog"
-        [style]="{ width: '90vw', maxWidth: '450px' }"
-        header="Datos del Cliente"
-        [modal]="true"
-        class="p-fluid"
-      >
-        <ng-template pTemplate="content">
-          <div class="field">
-            <label>Nombre</label>
-            <input
-              type="text"
-              pInputText
-              [(ngModel)]="cliente.nombre"
-              required
-              [ngClass]="{ 'ng-invalid ng-dirty': submitted && !cliente.nombre }"
-            />
-            <small
-              class="text-red-500"
-              *ngIf="submitted && !cliente.nombre"
-              >El nombre es requerido.</small
-            >
-          </div>
+  [(visible)]="clientDialog"
+  [style]="{ width: '100%', maxWidth: '500px' }"
+  header="Datos del Cliente"
+  [modal]="true"
+  [closable]="false"
+  [draggable]="false"
+  class="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <div class="formgrid grid">
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div class="field">
-              <label>Apellido Paterno</label>
-              <input
-                type="text"
-                pInputText
-                [(ngModel)]="cliente.apellidoPat"
-                required
-              />
-            </div>
-            <div class="field">
-              <label>Apellido Materno</label>
-              <input
-                type="text"
-                pInputText
-                [(ngModel)]="cliente.apellidoMat"
-                required
-              />
-            </div>
-          </div>
+      <!-- Nombre -->
+      <div class="field col-12">
+        <label for="nombre">Nombre *</label>
+        <input
+          id="nombre"
+          type="text"
+          pInputText
+          placeholder="Ingrese el nombre"
+          [(ngModel)]="cliente.nombre"
+          [ngClass]="{ 'ng-invalid ng-dirty': submitted && !cliente.nombre }"
+        />
+        <small class="p-error" *ngIf="submitted && !cliente.nombre">
+          El nombre es requerido.
+        </small>
+      </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div class="field">
-              <label>Teléfono</label>
-              <input
-                type="text"
-                pInputText
-                [(ngModel)]="cliente.telefono"
-                required
-              />
-            </div>
-            <div class="field">
-              <label>Correo</label>
-              <input
-                type="email"
-                pInputText
-                [(ngModel)]="cliente.correo"
-                required
-              />
-            </div>
-          </div>
+      <!-- Apellidos -->
+      <div class="field col-12 md:col-6">
+        <label for="apellidoPat">Apellido Paterno *</label>
+        <input
+          id="apellidoPat"
+          type="text"
+          pInputText
+          placeholder="Apellido paterno"
+          [(ngModel)]="cliente.apellidoPat"
+        />
+      </div>
 
-          <div class="field">
-            <label>Dirección</label>
-            <input
-              type="text"
-              pInputText
-              [(ngModel)]="cliente.direccion"
-              required
-            />
-          </div>
+      <div class="field col-12 md:col-6">
+        <label for="apellidoMat">Apellido Materno *</label>
+        <input
+          id="apellidoMat"
+          type="text"
+          pInputText
+          placeholder="Apellido materno"
+          [(ngModel)]="cliente.apellidoMat"
+        />
+      </div>
 
-          <div class="field">
-            <label>Fecha de Alta</label>
-            <p-calendar [(ngModel)]="cliente.fechaAlta"></p-calendar>
-          </div>
-        </ng-template>
+      <!-- Contacto -->
+      <div class="field col-12 md:col-6">
+        <label for="telefono">Teléfono *</label>
+        <input
+          id="telefono"
+          type="tel"
+          pInputText
+          placeholder="Ej. 9611234567"
+          [(ngModel)]="cliente.telefono"
+        />
+      </div>
 
-        <ng-template pTemplate="footer">
-          <div class="flex justify-end gap-2">
-            <button
-              pButton
-              pRipple
-              label="Cancelar"
-              icon="pi pi-times"
-              class="p-button-text"
-              (click)="hideDialog()"
-            ></button>
+      <div class="field col-12 md:col-6">
+        <label for="correo">Correo electrónico *</label>
+        <input
+          id="correo"
+          type="email"
+          pInputText
+          placeholder="correo@ejemplo.com"
+          [(ngModel)]="cliente.correo"
+        />
+      </div>
 
-            @if (!btnGuardar) {
-              <button
-                pButton
-                pRipple
-                label="Guardar"
-                icon="pi pi-check"
-                class="p-button-text"
-                (click)="creaCliente()"
-              ></button>
-            } @else {
-              <button
-                pButton
-                pRipple
-                label="Actualizar"
-                icon="pi pi-check"
-                class="p-button-text"
-                (click)="actualizaCliente()"
-              ></button>
-            }
-          </div>
-        </ng-template>
-      </p-dialog>
+      <!-- Dirección -->
+      <div class="field col-12">
+        <label for="direccion">Dirección *</label>
+        <input
+          id="direccion"
+          type="text"
+          pInputText
+          placeholder="Calle, número, colonia"
+          [(ngModel)]="cliente.direccion"
+        />
+      </div>
+
+      <!-- Fecha -->
+      <div class="field col-12">
+        <label for="fechaAlta">Fecha de Alta</label>
+        <p-calendar
+          id="fechaAlta"
+          [(ngModel)]="cliente.fechaAlta"
+          dateFormat="dd/mm/yy"
+          [showIcon]="true"
+          [showButtonBar]="true"
+           styleClass="w-full md:w-14rem"
+          placeholder="Seleccione una fecha"
+        ></p-calendar>
+      </div>
+
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-2">
+      
+      <button
+        pButton
+        label="Cancelar"
+        icon="pi pi-times"
+        class="p-button-text p-button-secondary"
+        (click)="hideDialog()"
+      ></button>
+
+      <button
+        *ngIf="!btnGuardar"
+        pButton
+        label="Guardar"
+        icon="pi pi-check"
+        class="p-button"
+        (click)="creaCliente()"
+      ></button>
+
+      <button
+        *ngIf="btnGuardar"
+        pButton
+        label="Actualizar"
+        icon="pi pi-refresh"
+        class="p-button"
+        (click)="actualizaCliente()"
+      ></button>
+
+    </div>
+  </ng-template>
+</p-dialog>
     </div>
   </div>
 </div>

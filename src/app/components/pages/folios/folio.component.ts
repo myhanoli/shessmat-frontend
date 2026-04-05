@@ -67,8 +67,15 @@ mostrarFiltros: boolean = false;
    estatusOptions: DropdownOption[] = [];
    nuevoEstatus: any = null;
   observacion: string = '';
+  resultadoDiagnostico: string | null = null;
 
-  
+  resultadosOptions = [
+    { label: 'Reparable', value: 'REPARABLE' },
+    { label: 'No reparable', value: 'NO_REPARABLE' },
+    { label: 'Requiere refacción', value: 'REQUIERE_REFACCION' },
+    { label: 'No se encontró falla', value: 'SIN_FALLA' }
+  ];
+
   historial: HistorialEstatus[] = [];
 
   usoPiezas: boolean = false;
@@ -189,7 +196,7 @@ nuevoFolio(): void {
     if (resultado && resultado.actualizado) {
       console.log('Folio actualizado. Recargando datos...');
       // Lógica para recargar la tabla o actualizar la fila específica
-      // Ejemplo: this.cargarFolios(); 
+       this.cargarFolios(); 
     }
     this.ref = undefined;
   });
@@ -225,6 +232,10 @@ abrirSeguimiento(folio: any) {
  cargarEstatus(): void {
     this.catalogosService.getEstatusDropdown().subscribe(data => {
       this.estatusOptions = data;
+      // Agregar 'DIAGNOSTICO COMPLETADO' si no está presente
+      if (!this.estatusOptions.some(e => e.label === 'DIAGNOSTICO COMPLETADO')) {
+        this.estatusOptions.push({ label: 'DIAGNOSTICO COMPLETADO', value: '5' }); // Reemplaza '5' con el ID real del backend
+      }
     });
   }
 
@@ -233,11 +244,14 @@ abrirSeguimiento(folio: any) {
 guardarSeguimiento() {
   if (!this.nuevoEstatus || !this.observacion) return;
 
+  const esDiagnostico = this.nuevoEstatus?.label === 'DIAGNOSTICO COMPLETADO';
+
   // Preparamos el DTO con datos de cierre solo si es CERRADO
   const dto: any = {
     folioId: this.folioSeleccionado.id,
     estatusId: Number(this.nuevoEstatus.value),
     comentario: this.observacion,
+    resultadoDiagnostico: esDiagnostico ? this.resultadoDiagnostico : null,
     cierre: this.nuevoEstatus?.label === 'CERRADO' ? {
       usoPiezas: this.usoPiezas,
       piezas: this.piezas,
@@ -251,11 +265,17 @@ guardarSeguimiento() {
       // Actualizar estatus localmente
       this.folioSeleccionado.estatusActual = this.estatusOptions.find(e => e.value === this.nuevoEstatus.value);
 
+      // Si el estatus es DIAGNOSTICO COMPLETADO, guardar el resultado independiente
+      if (esDiagnostico) {
+        this.folioSeleccionado.resultadoDiagnostico = this.resultadoDiagnostico;
+        this.resultadoDiagnostico = null;
+      }
+
       // Si el estatus es CERRADO, generar ticket automáticamente
       if (this.nuevoEstatus?.label === 'CERRADO' && dto.cierre) {
         this.generarTicketPDF(dto.cierre);  // <-- enviamos los datos de cierre
       }
-
+ this.cargarFolios(); 
       // Cerramos el modal
       this.cerrarModal();
     },
@@ -271,6 +291,10 @@ cerrarModal() {
     this.mostrarSeguimiento = false;
     this.nuevoEstatus = null;
     this.observacion = '';
+    this.resultadoDiagnostico = null;
+    this.usoPiezas = false;
+    this.piezas = [];
+    this.manoObra = 0;
   }
 
     cargarHistorial(folioId: number) {
@@ -281,6 +305,22 @@ cerrarModal() {
     });
   }
 
+  descargarTicket(folio: Folio) {
+    this.folioService.getTicket(folio.id).subscribe({
+      next: (blob) => {
+        const fileName = `ticket_${folio.folio?.toString().replace(/\s+/g, '_')}.pdf`;
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Error descargando ticket:', err);
+      }
+    });
+  }
 
 esCambioEstatus(item: any) {
   return item.estatusAnterior !== item.estatusNuevo;

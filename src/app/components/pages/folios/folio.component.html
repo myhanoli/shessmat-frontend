@@ -208,6 +208,7 @@
     [ngClass]="{
       'bg-blue-500': folio.estatusActual?.nombre === 'RECIBIDO',
     'bg-yellow-500': folio.estatusActual?.nombre === 'EN DIAGNOSTICO',
+    'bg-yellow-500': folio?.estatusActual?.nombre === 'DIAGNOSTICO COMPLETADO',
     'bg-orange-500': folio.estatusActual?.nombre === 'ESPERA AUTORIZACION',
     'bg-purple-500': folio.estatusActual?.nombre === 'EN REPARACION',
     'bg-green-500': folio.estatusActual?.nombre === 'LISTO PARA ENTREGA',
@@ -233,6 +234,16 @@
     class="p-button-rounded p-button-info"
     pTooltip="Seguimiento"
     (click)="abrirSeguimiento(folio)">
+  </button>
+  <button
+    pButton
+    icon="pi pi-file-pdf"
+    class="p-button-rounded p-button-help"
+    pTooltip="Generar Ticket"
+    showDelay="100"
+    hideDelay="300"
+    tooltipPosition="top"
+    (click)="descargarTicket(folio)">
   </button>
                   <button 
                     pButton pRipple 
@@ -279,6 +290,7 @@
         [ngClass]="{
   'bg-blue-500': folioSeleccionado?.estatusActual?.nombre === 'RECIBIDO',
     'bg-yellow-500': folioSeleccionado?.estatusActual?.nombre === 'EN DIAGNOSTICO',
+    'bg-yellow-500': folioSeleccionado?.estatusActual?.nombre === 'DIAGNOSTICO COMPLETADO',
     'bg-orange-500': folioSeleccionado?.estatusActual?.nombre === 'ESPERA AUTORIZACION',
     'bg-purple-500': folioSeleccionado?.estatusActual?.nombre === 'EN REPARACION',
     'bg-green-500': folioSeleccionado?.estatusActual?.nombre === 'LISTO PARA ENTREGA',
@@ -288,6 +300,15 @@
   }">
   {{ folioSeleccionado?.estatusActual?.nombre || 'Sin estatus' }}
       </span>
+
+      <div *ngIf="folioSeleccionado?.resultadoDiagnostico" class="mt-2">
+        <label class="font-semibold block mb-1">Resultado diagnóstico</label>
+        <span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-sm">
+          {{ folioSeleccionado?.resultadoDiagnostico }}
+        </span>
+      </div>
+
+     
 
 <p-timeline [value]="historial" align="right">
   <ng-template pTemplate="content" let-item>
@@ -311,6 +332,19 @@
   class="w-full">
 </p-dropdown>
 
+</div>
+
+<div *ngIf="nuevoEstatus?.label === 'DIAGNOSTICO COMPLETADO'" class="mb-3">
+  <label class="font-semibold block mb-1">Resultado del diagnóstico</label>
+
+  <p-dropdown
+    [options]="resultadosOptions"
+    optionLabel="label"
+    optionValue="value"
+    [(ngModel)]="resultadoDiagnostico"
+    placeholder="Selecciona el resultado"
+    class="w-full">
+  </p-dropdown>
 </div>
 
 
@@ -418,7 +452,7 @@
         label="Guardar avance"
         icon="pi pi-save"
         class="p-button-success"
-        [disabled]="!nuevoEstatus || !observacion"
+        [disabled]="!nuevoEstatus || !observacion || (nuevoEstatus?.label === 'DIAGNOSTICO COMPLETADO' && !resultadoDiagnostico)"
         (click)="guardarSeguimiento()">
       </button>
     </div>
