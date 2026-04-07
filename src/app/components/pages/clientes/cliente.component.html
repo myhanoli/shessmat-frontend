@@ -263,18 +263,19 @@
       </div>
 
       <!-- Fecha -->
-      <div class="field col-12">
-        <label for="fechaAlta">Fecha de Alta</label>
-        <p-calendar
-          id="fechaAlta"
-          [(ngModel)]="cliente.fechaAlta"
-          dateFormat="dd/mm/yy"
-          [showIcon]="true"
-          [showButtonBar]="true"
-           styleClass="w-full md:w-14rem"
-          placeholder="Seleccione una fecha"
-        ></p-calendar>
-      </div>
+    <div class="field col-12 md:col-6 lg:col-4">
+  <label for="fechaAlta">Fecha de Alta</label>
+<p-calendar
+  id="fechaAlta"
+  [(ngModel)]="cliente.fechaAlta"
+  dateFormat="dd/mm/yy"
+  [showIcon]="true"
+  [showButtonBar]="true"
+  placeholder="Seleccione una fecha"
+  class="calendar-small mt-1"
+  appendTo="body"
+></p-calendar>
+</div>
 
     </div>
   </ng-template>

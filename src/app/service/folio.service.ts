@@ -55,13 +55,14 @@ private httpHeaders = new HttpHeaders({
   creaFolio(folio:FolioRequest):Observable<Folio>{
     folio.idEstatus = 1;
   console.log("JsonFolio: " + folio)
-    return this.http.post<Folio>('http://localhost:8080/api/guardarFolio',folio,{headers:this.httpHeaders})
-   // return this.http.post<Folio>('https://shessmat-backend-production.up.railway.app/api/guardarFolio',folio,{headers:this.httpHeaders})
+  
+    return this.http.post<Folio>('${environment.urlHost}api/guardarFolio',folio,{headers:this.httpHeaders})
+   // return this.http.post<Folio>('${environment.urlHost}api/guardarFolio',folio,{headers:this.httpHeaders})
   }
 
 
   actualizarFolio(folio: any) {
-  return this.http.put(`http://localhost:8080/api/folios/${folio.id}`, folio);
+  return this.http.put(`${environment.urlHost}api/folios/${folio.id}`, folio);
 }
 
   exportPdf(elementPDF:FolioModel):Observable<Blob>{
@@ -94,38 +95,38 @@ private httpHeaders = new HttpHeaders({
 
  
  getEndFolio(): Observable<string> {
-  return this.http.get('http://localhost:8080/api/getEndFolio', { responseType: 'text' });
+  return this.http.get(`${environment.urlHost}api/getEndFolio`, { responseType: 'text' });
 }
 
 
   getByFiltros(filtros:FolioModel): Observable<Folio[]> {
-    return this.http.post<Folio[]>('api/folios/getFiltros',filtros,{headers:this.httpHeaders})
+    return this.http.post<Folio[]>(`${environment.urlHost}api/folios/getFiltros`, filtros, {headers:this.httpHeaders})
   }
 
 
   sendFolio(array:FolioAprobadosModel[]):Observable<any>{ 
     console.log("JsonFolio: " + array[0])
     
-      return this.http.post<Folio>('api/foliosSelect',array,{headers:this.httpHeaders})
+      return this.http.post<Folio>('${environment.urlHost}api/foliosSelect',array,{headers:this.httpHeaders})
     }
 
 
     subirMultiplesImagenes(formData: FormData): Observable<any> {
       console.log('Folio:', formData.get('folio'));
-  return this.http.post('http://localhost:8080/api/upload',formData);
- // return this.http.post('https://shessmat-backend-production.up.railway.app/api/upload',formData);
+  return this.http.post('${environment.urlHost}api/upload',formData);
+ // return this.http.post('${environment.urlHost}api/upload',formData);
 }
 
 
 
 
 guardarSeguimiento(dto: { folioId: number; estatusId: number; comentario: string }): Observable<any> {
-  return this.http.post(`http://localhost:8080/api/seguimiento`, dto);
+  return this.http.post(`${environment.urlHost}api/seguimiento`, dto);
 }
 
 
  getHistorial(folioId: number): Observable<HistorialEstatus[]> {
-		    return this.http.get<HistorialEstatus[]>(`http://localhost:8080/api/${folioId}/historial`);
+		    return this.http.get<HistorialEstatus[]>(`${environment.urlHost}api/${folioId}/historial`);
 		  }
 
 

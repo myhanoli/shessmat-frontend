@@ -1,0 +1,13 @@
+/* Forzar el popup a estar sobre todo */
+.p-datepicker {
+  position: fixed !important;
+  z-index: 1500 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Input calendario un poco más ancho y con padding */
+.calendar-small .p-inputtext {
+  width: 14rem !important;
+  padding: 0.5rem 0.75rem !important;
+  box-sizing: border-box;
+}

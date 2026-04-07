@@ -15,22 +15,32 @@ export class AppMenuComponent implements OnInit {
 
     ngOnInit() {
         // Construir items de Pages
+        const soporteTecnicoItems = [
+            {
+                label: 'Recepcion de equipos',
+                icon: 'pi pi-fw pi-arrow-right',
+                routerLink: ['/layout/pages/recepcion-equipo']
+            },
+            {
+                label: 'Servicios',
+                icon: 'pi pi-fw pi-arrow-left',
+                routerLink: ['/layout/pages/folios']
+            }
+        ];
+
+        if (this.roleService.isAdmin()) {
+            soporteTecnicoItems.push({
+                label: 'Reportes de reparaciones',
+                icon: 'pi pi-fw pi-file-excel',
+                routerLink: ['/layout/reportes-reparaciones']
+            });
+        }
+
         const pagesItems = [
             {
                 label: 'Soporte Tecnico',
                 icon: 'pi pi-fw pi-wrench',
-                items: [
-                    {
-                        label: 'Recepcion de equipos',
-                        icon: 'pi pi-fw pi-arrow-right',
-                        routerLink: ['/layout/pages/recepcion-equipo']
-                    },
-                    {
-                        label: 'Servicios',
-                        icon: 'pi pi-fw pi-arrow-left',
-                        routerLink: ['/layout/pages/folios']
-                    }
-                ]
+                items: soporteTecnicoItems
             },
             {
                 label: 'Catalogos',

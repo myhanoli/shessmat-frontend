@@ -24,6 +24,7 @@ import { AuthGuard } from './components/auth/guards/auth-guard';
                     { path: 'proceso-inscripcion', loadChildren: () => import('./components/proceso-inscripcion/proceso-inscripcion.module').then(m => m.ProcesoInscripcionModule), canActivate: [AuthGuard]},
                     { path: 'mantenimiento', loadChildren: () => import('./components/mantenimiento/mantenimiento.module').then(m => m.MantenimientoModule), canActivate: [AuthGuard]},
                     { path: 'operacion-emisores', loadChildren: () => import('./components/operacion-emisores/operacion-emisores.module').then(m => m.OperacionEmisoresModule), canActivate: [AuthGuard]},
+                    { path: 'reportes-reparaciones', loadChildren: () => import('./components/reportes-reparaciones/reportes-reparaciones.module').then(m => m.ReportesReparacionesModule), canActivate: [AuthGuard], data: { expectedRole: ['admin'] }},
                 ]
             },
             //{ path: 'layout', loadChildren: () => import('./layout/app.layout.module').then(m => m.AppLayoutModule) },

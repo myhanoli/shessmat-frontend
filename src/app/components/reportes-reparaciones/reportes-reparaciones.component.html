@@ -1,0 +1,82 @@
+<div class="reportes-page">
+  <header class="page-header">
+    <h2>Reportes de reparaciones</h2>
+    <p>Filtra por rango de fechas y técnico para ver métricas y resultados.</p>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="search()" class="filters">
+    <div class="field">
+      <label for="fechaInicio">Fecha inicio</label>
+      <input id="fechaInicio" type="date" formControlName="fechaInicio" />
+      <small class="error" *ngIf="fechaInicio?.touched && fechaInicio?.invalid">La fecha de inicio es requerida.</small>
+    </div>
+
+    <div class="field">
+      <label for="fechaFin">Fecha fin</label>
+      <input id="fechaFin" type="date" formControlName="fechaFin" />
+      <small class="error" *ngIf="fechaFin?.touched && fechaFin?.invalid">La fecha de fin es requerida.</small>
+    </div>
+
+    <div class="field">
+      <label for="tecnico">Técnico</label>
+      <input id="tecnico" type="text" formControlName="tecnico" placeholder="Nombre del técnico (opcional)" />
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="primary" [disabled]="loading">Buscar</button>
+      <button type="button" class="secondary" (click)="exportExcel()" [disabled]="exporting">Exportar a Excel</button>
+    </div>
+  </form>
+
+  <div class="status-row" *ngIf="loading || exporting || errorMessage">
+    <span *ngIf="loading">Cargando datos...</span>
+    <span *ngIf="exporting">Generando archivo Excel...</span>
+    <span class="error" *ngIf="errorMessage">{{ errorMessage }}</span>
+  </div>
+
+  <section class="kpi-cards" *ngIf="!loading">
+    <article class="card">
+      <span>Total de reparaciones</span>
+      <strong>{{ totalReparaciones }}</strong>
+    </article>
+    <article class="card">
+      <span>Total de ingresos</span>
+      <strong>{{ totalIngresos | number:'1.0-2' }}</strong>
+    </article>
+    <article class="card">
+      <span>Total de mano de obra</span>
+      <strong>{{ totalManoObra | number:'1.0-2' }}</strong>
+    </article>
+  </section>
+
+  <section class="table-wrapper" *ngIf="reportes.length && !loading; else emptyState">
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Folio</th>
+          <th>Técnico</th>
+          <th>Total</th>
+          <th>Mano de obra</th>
+          <th>Uso de piezas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of reportes">
+          <td>{{ item.fecha }}</td>
+          <td>{{ item.folio }}</td>
+          <td>{{ item.tecnico }}</td>
+          <td>{{ item.total | number:'1.2-2' }}</td>
+          <td>{{ item.manoObra | number:'1.2-2' }}</td>
+          <td>{{ item.usoPiezas ? 'Sí' : 'No' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <ng-template #emptyState>
+    <div class="empty-state" *ngIf="!loading">
+      <p>No hay resultados para los filtros seleccionados.</p>
+    </div>
+  </ng-template>
+</div>
