@@ -21,7 +21,7 @@ export class ClientesService {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     //'Access-Control-Allow-Origin': 'http://localhost:8080/'
-    'Access-Control-Allow-Origin': 'https://shessmat-backend-production.up.railway.app/'
+    'Access-Control-Allow-Origin': 'environment.urlHost'
     })
 
   constructor(private http: HttpClient) { }
@@ -66,7 +66,8 @@ export class ClientesService {
 
   }
   
-
-
+getEndNumCliente(): Observable<string> {
+  return this.http.get(environment.urlHost + 'api/ultimo-numero', { responseType: 'text' as const });
+}
 
 }

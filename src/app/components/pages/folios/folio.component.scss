@@ -1,0 +1,27 @@
+.timeline-content {
+  max-width: 100%;       /* No sobrepasa el ancho del contenedor */
+  word-wrap: break-word; /* Corta palabras largas si es necesario */
+  white-space: normal;   /* Permite saltos de línea normales */
+}
+
+.dialog-body {
+  max-height: 400px;   /* Ajusta según tu diseño */
+  overflow-y: auto;    /* Scroll vertical */
+}
+
+.timeline-item {
+  text-align: center;      /* Centra todo el contenido */
+  display: inline-block;   /* Permite que el ancho se ajuste al contenido */
+  max-width: 80%;          /* Evita que se salga del diálogo */
+  margin: 0 auto;          /* Centra el bloque dentro de su contenedor */
+}
+
+.timeline-text {
+  word-wrap: break-word;   /* Ajusta textos largos */
+  white-space: normal;
+}
+
+.timeline-date {
+  font-size: 0.75rem;
+  color: #6b7280;          /* gris */
+}

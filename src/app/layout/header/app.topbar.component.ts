@@ -17,7 +17,7 @@ export class AppTopBarComponent implements OnInit  {
 
   ngOnInit() {
     console.log("Usuario en localStorage: " + localStorage.getItem("user"))
-          this.user = localStorage.getItem("user");
+          this.user = JSON.parse(localStorage.getItem("user") || '{}');
     }
 
     items!: MenuItem[];

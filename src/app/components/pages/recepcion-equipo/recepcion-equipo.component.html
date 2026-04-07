@@ -5,90 +5,156 @@
 
       <form [formGroup]="formFolio" class="space-y-6">
         <!-- Primer bloque: Folio y Fecha -->
-        <div class="bg-white shadow rounded-xl p-6 max-w-[850px] mx-auto">
+        <div class="bg-white shadow rounded-xl p-4 max-w-[850px] mx-auto">
           <div class="flex flex-col md:flex-row gap-4">
             
                  <div class="flex flex-col flex-1">
               <label class="text-sm font-medium text-gray-700 mb-1">Folio</label>
-              <input type="text" formControlName="folio" readonly
-                class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <input type="text" formControlName="folio"  [readonly]="true"
+    class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-500 bg-gray-100 cursor-not-allowed focus:outline-none" />
             </div>
 
-            <div class="flex flex-col flex-1">
-              <label class="text-sm font-medium text-gray-700 mb-1">Fecha</label>
-              <input type="date" formControlName="fecha" readonly
-                class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
+      <div class="flex flex-col flex-1">
+  <label class="text-sm font-medium text-gray-700 mb-1">Fecha</label>
+
+  <input
+    type="date"
+    formControlName="fecha"
+    [class.bg-gray-100]="formFolio.get('fecha')?.disabled"
+    [class.text-gray-500]="formFolio.get('fecha')?.disabled"
+    [class.cursor-not-allowed]="formFolio.get('fecha')?.disabled"
+    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+</div>
+
+
           </div>
         </div>
 
-        <!-- Botón Agregar Cliente -->
-        <div class="bg-white shadow rounded-xl p-4 max-w-[850px] mx-auto text-center md:text-left">
-          <button type="button" (click)="addClient()"
-            class="bg-green-600 hover:bg-green-700 text-white rounded-full p-3 shadow transition">
-            <i class="pi pi-plus"></i>
-          </button>
-        </div>
-
-        <!-- Segundo bloque: Datos del Cliente -->
-        <div class="bg-white shadow rounded-xl p-6 max-w-[850px] mx-auto">
-          <div class="flex flex-col md:flex-row gap-4">
-             <div class="flex flex-col flex-1">
-              <label class="text-sm font-medium text-gray-700 mb-1">Num. Cliente</label>
-              <input type="text" formControlName="numCliente"
-                class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-
-            <div class="flex flex-col flex-1">
-              <label class="text-sm font-medium text-gray-700 mb-1">Nombre</label>
-              <input type="text" formControlName="nombre"
-                class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-          </div>
-        </div>
-
+        
         <!-- Tercer bloque: Datos del Equipo -->
         <div class="bg-white shadow rounded-xl p-6 max-w-[850px] mx-auto space-y-4">
           <div class="flex flex-col md:flex-row gap-4">
             <div class="flex flex-col flex-1">
               <label class="text-sm font-medium text-gray-700 mb-1">Tipo de Equipo</label>
-              <select formControlName="tipoEquipo" [(ngModel)]="selectedTipoEquipo.id" (change)="capturar($event.target.value)"
-                class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option *ngFor="let tipo of tiposEquipos" [value]="tipo">{{ tipo }}</option>
-              </select>
+              <select formControlName="tipoEquipo"
+         (change)="onTipoEquipoChange($event.target.value)"
+        class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+  <option *ngFor="let tipo of tiposEquipos" [value]="tipo">{{ tipo }}</option>
+</select>
             </div>
 
-            <div class="flex flex-col flex-1">
-              <label class="text-sm font-medium text-gray-700 mb-1">Marca</label>
-              <select formControlName="marca" [(ngModel)]="selectedMarca.id" (change)="capturarMarca($event.target.value)"
-                class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option *ngFor="let marca of marcas" [value]="marca">{{ marca }}</option>
-              </select>
-            </div>
+           <!-- Marca dinámica -->
+<div class="flex flex-col flex-1">
+  <label class="text-sm font-medium text-gray-700 mb-1">Marca</label>
+  <select formControlName="marca"
+          (change)="onMarcaChange($event.target.value)"
+          class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <option value="" disabled selected>Selecciona una marca</option>
+    <option *ngFor="let marca of marcasActuales" [value]="marca">{{ marca }}</option>
+  </select>
+</div>
           </div>
 
-          <div class="flex flex-col md:flex-row gap-4">
-            <div class="flex flex-col flex-1">
-              <label class="text-sm font-medium text-gray-700 mb-1">Modelo</label>
-              <input type="text" id="modelo" name="modelo" [(ngModel)]="folio.modelo" formControlName="modelo"
-                class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
+       <!-- Campos de Modelo y Num. Serie según reglas -->
+<div *ngIf="mostrarModeloSerie" class="flex flex-col md:flex-row gap-4 mt-4">
+  <div class="flex flex-col flex-1">
+    <label class="text-sm font-medium text-gray-700 mb-1">Modelo</label>
+    <input type="text" formControlName="modelo"
+           class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+  </div>
+  <div class="flex flex-col flex-1">
+    <label class="text-sm font-medium text-gray-700 mb-1">Num. Serie</label>
+    <input type="text" formControlName="numSerie"
+           class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+  </div>
+</div>
+  <!-- Preguntas dinámicas si es Laptop -->
+  <div  *ngIf="isLaptop || isCelular" class="flex flex-col md:flex-row gap-4">
+    <!-- ¿Viene encendido? -->
+  <div class="flex flex-col md:flex-row gap-4 items-center">
+    <label class="text-sm font-medium text-gray-700 mb-1">¿Viene encendido?</label>
+    <div class="flex gap-4">
+      <label>
+        <input type="radio" formControlName="encendido" [value]="true"> Sí
+      </label>
+      <label>
+        <input type="radio" formControlName="encendido" [value]="false"> No
+      </label>
+    </div>
+  </div>
 
-            <div class="flex flex-col flex-1">
-              <label class="text-sm font-medium text-gray-700 mb-1">Num. Serie</label>
-              <input type="text" id="numSerie" name="numSerie" [(ngModel)]="folio.numSerie" formControlName="numSerie"
-                class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-          </div>
+  <!-- ¿Trae cargador? -->
+  <div class="flex flex-col md:flex-row gap-4 items-center">
+    <label class="text-sm font-medium text-gray-700 mb-1">¿Trae cargador?</label>
+    <div class="flex gap-4">
+      <label>
+        <input type="radio" formControlName="traeCargador" [value]="true"> Sí
+      </label>
+      <label>
+        <input type="radio" formControlName="traeCargador" [value]="false"> No
+      </label>
+    </div>
+  </div>
+
+     <!-- Campos de cargador solo si trae cargador -->
+  <div *ngIf="formFolio.get('traeCargador')?.value" class="flex flex-col md:flex-row gap-4">
+    <div class="flex flex-col flex-1">
+      <label class="text-sm font-medium text-gray-700 mb-1">Marca del cargador</label>
+      <input type="text" formControlName="marcaCargador"
+             class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    </div>
+    <div class="flex flex-col flex-1">
+      <label class="text-sm font-medium text-gray-700 mb-1">Num. Serie del cargador</label>
+      <input type="text" formControlName="numSerieCargador"
+             class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    </div>
+  </div>
+ </div>
+
+
+
 
           <div class="flex flex-col">
-            <label class="text-sm font-medium text-gray-700 mb-1">Comentarios</label>
+            <label class="text-sm font-medium text-gray-700 mb-1">Descripcion de falla por cliente</label>
             <textarea id="comentarios" name="comentarios" [(ngModel)]="folio.comentarios" formControlName="comentarios"
               class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full h-24"></textarea>
           </div>
 
+
+          <!-- Botón Agregar Cliente -->
+        <div class="bg-white shadow rounded-xl p-2 max-w-[850px] mx-auto text-center md:text-left">
+          <button type="button" (click)="addClient()"
+            class="bg-green-600 hover:bg-green-600 text-white rounded-full p-3 shadow transition">
+            <i class="pi pi-plus"></i>
+          </button>
+        </div>
+
+        <!-- Segundo bloque: Datos del Cliente -->
+       <div class="bg-white shadow rounded-xl p-4 max-w-[850px] mx-auto">
+  <div class="flex flex-col md:flex-row gap-4">
+
+    <div class="flex flex-col flex-1">
+      <label class="text-sm font-medium text-gray-700 mb-1">Num. Cliente</label>
+      <span class="border rounded-lg px-3 py-2 text-sm bg-gray-100 ">
+        {{ formFolio.get('numCliente')?.value }}
+      </span>
+    </div>
+
+    <div class="flex flex-col flex-1">
+      <label class="text-sm font-medium text-gray-700 mb-1">Nombre</label>
+      <span class="border rounded-lg px-3 py-2 text-sm bg-gray-100 ">
+        {{ formFolio.get('nombre')?.value }}
+      </span>
+    </div>
+
+  </div>
+</div>
+
+
+
           <div class="mt-4 flex justify-center md:justify-end">
-            <button type="submit"
+            <button type="submit"   (click)="guardarFolio()"
               class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2">
               <i class="pi pi-check"></i> Guardar
             </button>
@@ -96,26 +162,11 @@
         </div>
       </form>
 
-      <!-- Tabla PrimeNG intacta -->
-      <p-table #dt [value]="clientes" [columns]="cols" styleClass="p-datatable-sm"
-        [tableStyle]="{'min-width': '100%'}" responsiveLayout="scroll" [rows]="10"
-        [globalFilterFields]="['name','country.name','representative.name','status']" [paginator]="true"
-        [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
-        [(selection)]="selectedProducts" selectionMode="multiple" [rowHover]="true" dataKey="id">
-        <!-- Aquí tu código de la tabla igual -->
-      </p-table>
+   
     </div>
   </div>
 </div>
 
-<!-- Dialog con Tailwind -->
-<p-dialog [(visible)]="clientDialog" [style]="{width: '95%', maxWidth: '650px'}"
-  header="Alta de folio" [modal]="true" class="p-fluid" appendTo="body">
-  <div class="flex flex-col gap-2">
-    <select class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-      <option value="1">Opción 1</option>
-      <option value="2">Opción 2</option>
-    </select>
-  </div>
-</p-dialog>
+
+
+

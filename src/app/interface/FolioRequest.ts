@@ -1,10 +1,6 @@
 import { Cliente2 } from 'src/app/interface/cliente2';
 
-
-
-
-export class Folio {
- 
+export class FolioRequest {
    id: number;
   folio: string;
   fecha: Date;
@@ -17,14 +13,8 @@ export class Folio {
   traeCargador: boolean;
   marcaCargador: string;
   numSerieCargador: string;
-
   // Datos del cliente (según DTO)
   clienteId: number;
-  clienteNombre: string;
+  idEstatus: number;
 
-   
-  estatusActual?: {
-    id: number;
-    nombre: string;
-  };
 }

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders,HttpRequest, HttpEvent} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {forkJoin, Observable} from 'rxjs';
 
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -9,6 +9,11 @@ import { TipoEquipo } from '../interface/TipoEquipo';
 import { FolioModel } from '../interface/FolioModel';
 import { FileModel } from '../interface/FileModel';
 import { FolioAprobadosModel } from '../interface/FoliosAprobadosModel';
+import { FolioRequest } from '../interface/FolioRequest';
+import { AuthService } from './auth-service.service';
+import { HistorialEstatus } from '../model/historialEstatus';
+
+
 
 
 @Injectable({
@@ -19,19 +24,26 @@ export class FolioService {
 private httpHeaders = new HttpHeaders({
 'Content-Type': 'application/json',
 'Accept': 'application/json',
-//'Access-Control-Allow-Origin': 'http://localhost:8080/'
-'Access-Control-Allow-Origin': 'https://shessmat-backend-production.up.railway.app/'
+'Access-Control-Allow-Origin': 'http://localhost:8080/'
+//'Access-Control-Allow-Origin': 'https://shessmat-backend-production.up.railway.app/'
 })
 
-  constructor(private http: HttpClient) {
-  }
+
+
+  constructor(private http: HttpClient, private authService: AuthService) { }
+
 
   getFolios(): Observable<Folio[]> {
-    return this.http.get('api/listaFolios').pipe(
+    return this.http.get(environment.urlHost+'api/listaFolios').pipe(
       map(response => response as Folio[])
     );
   }
 
+  getTicket(folioId: number): Observable<Blob> {
+    return this.http.get(`${environment.urlHost}api/folios/${folioId}/ticket`, {
+      responseType: 'blob'
+    });
+  }
 
   getFoliosAprobados(): Observable<FolioAprobadosModel[]> {
     return this.http.get('api/listaFoliosAprobados').pipe(
@@ -40,16 +52,18 @@ private httpHeaders = new HttpHeaders({
   }
   
 
-  creaFolio(folio:Folio):Observable<Folio>{
-    console.log("cliente in service : " + folio.cliente);
-    console.log("marca in service : " + folio.marca);
-    console.log("modelo in service: " + folio.modelo);
-    console.log("numSerie in service: " + folio.numSerie);
-    console.log("Comentario in service: " + folio.comentarios);
+  creaFolio(folio:FolioRequest):Observable<Folio>{
+    folio.idEstatus = 1;
   console.log("JsonFolio: " + folio)
-   // return this.http.post<Folio>('http://localhost:8080/api/guardarFolio',folio,{headers:this.httpHeaders})
-    return this.http.post<Folio>('https://shessmat-backend-production.up.railway.app/api/guardarFolio',folio,{headers:this.httpHeaders})
+  
+    return this.http.post<Folio>('${environment.urlHost}api/guardarFolio',folio,{headers:this.httpHeaders})
+   // return this.http.post<Folio>('${environment.urlHost}api/guardarFolio',folio,{headers:this.httpHeaders})
   }
+
+
+  actualizarFolio(folio: any) {
+  return this.http.put(`${environment.urlHost}api/folios/${folio.id}`, folio);
+}
 
   exportPdf(elementPDF:FolioModel):Observable<Blob>{
     console.log("elementPDF: " + elementPDF.folio)
@@ -80,23 +94,41 @@ private httpHeaders = new HttpHeaders({
 
 
  
-  getEndFolio(): Observable<number> {
-    return this.http.get('api/getEndFolio').pipe(
-      map(response => response as number)
-    );
-  }
+ getEndFolio(): Observable<string> {
+  return this.http.get(`${environment.urlHost}api/getEndFolio`, { responseType: 'text' });
+}
 
 
   getByFiltros(filtros:FolioModel): Observable<Folio[]> {
-    return this.http.post<Folio[]>('api/folios/getFiltros',filtros,{headers:this.httpHeaders})
+    return this.http.post<Folio[]>(`${environment.urlHost}api/folios/getFiltros`, filtros, {headers:this.httpHeaders})
   }
 
 
   sendFolio(array:FolioAprobadosModel[]):Observable<any>{ 
     console.log("JsonFolio: " + array[0])
     
-      return this.http.post<Folio>('api/foliosSelect',array,{headers:this.httpHeaders})
+      return this.http.post<Folio>('${environment.urlHost}api/foliosSelect',array,{headers:this.httpHeaders})
     }
+
+
+    subirMultiplesImagenes(formData: FormData): Observable<any> {
+      console.log('Folio:', formData.get('folio'));
+  return this.http.post('${environment.urlHost}api/upload',formData);
+ // return this.http.post('${environment.urlHost}api/upload',formData);
+}
+
+
+
+
+guardarSeguimiento(dto: { folioId: number; estatusId: number; comentario: string }): Observable<any> {
+  return this.http.post(`${environment.urlHost}api/seguimiento`, dto);
+}
+
+
+ getHistorial(folioId: number): Observable<HistorialEstatus[]> {
+		    return this.http.get<HistorialEstatus[]>(`${environment.urlHost}api/${folioId}/historial`);
+		  }
+
 
 
 }
