@@ -40,7 +40,8 @@ private httpHeaders = new HttpHeaders({
   }
 
   getTicket(folioId: number): Observable<Blob> {
-    return this.http.get(environment.urlHost+'api/folios/${folioId}/ticket', {
+    console.log('folio ID in Service:', folioId);
+    return this.http.get(`${environment.urlHost}api/folios/${folioId}/ticket`, {
       responseType: 'blob'
     });
   }
