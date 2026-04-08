@@ -24,8 +24,8 @@ export class FolioService {
 private httpHeaders = new HttpHeaders({
 'Content-Type': 'application/json',
 'Accept': 'application/json',
-'Access-Control-Allow-Origin': 'http://localhost:8080/'
-//'Access-Control-Allow-Origin': 'https://shessmat-backend-production.up.railway.app/'
+//'Access-Control-Allow-Origin': 'http://localhost:8080/'
+'Access-Control-Allow-Origin': environment.urlHost
 })
 
 
