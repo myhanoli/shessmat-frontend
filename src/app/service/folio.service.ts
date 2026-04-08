@@ -40,7 +40,7 @@ private httpHeaders = new HttpHeaders({
   }
 
   getTicket(folioId: number): Observable<Blob> {
-    return this.http.get(`${environment.urlHost}api/folios/${folioId}/ticket`, {
+    return this.http.get(environment.urlHost+'api/folios/${folioId}/ticket', {
       responseType: 'blob'
     });
   }
@@ -56,7 +56,7 @@ private httpHeaders = new HttpHeaders({
     folio.idEstatus = 1;
   console.log("JsonFolio: " + folio)
   
-    return this.http.post<Folio>('${environment.urlHost}api/guardarFolio',folio,{headers:this.httpHeaders})
+    return this.http.post<Folio>(environment.urlHost+'api/guardarFolio',folio,{headers:this.httpHeaders})
    // return this.http.post<Folio>('${environment.urlHost}api/guardarFolio',folio,{headers:this.httpHeaders})
   }
 
