@@ -306,6 +306,7 @@ cerrarModal() {
   }
 
   descargarTicket(folio: Folio) {
+    console.log('Descargando ticket para folio ID:', folio.id);
     this.folioService.getTicket(folio.id).subscribe({
       next: (blob) => {
         const fileName = `ticket_${folio.folio?.toString().replace(/\s+/g, '_')}.pdf`;
