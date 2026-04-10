@@ -411,7 +411,8 @@ capturarMarca(value) {
 addClient(){
   this.ref = this.dialogService.open(ClienteComponent, {
       header: 'Seleccionar Cliente',
-      width: '68%',
+      width: '95vw',
+      style: { maxWidth: '800px' },
       contentStyle: { overflow: 'auto' },
       closable: true,
       dismissableMask: true,

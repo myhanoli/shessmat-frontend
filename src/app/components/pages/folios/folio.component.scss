@@ -25,3 +25,13 @@
   font-size: 0.75rem;
   color: #6b7280;          /* gris */
 }
+
+@media (max-width: 640px) {
+  .timeline-item {
+    max-width: 100%;
+  }
+
+  .dialog-body {
+    max-height: 300px;
+  }
+}

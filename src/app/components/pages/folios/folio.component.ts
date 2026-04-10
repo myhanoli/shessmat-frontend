@@ -166,7 +166,12 @@ nuevoFolio(): void {
   
      this.ref = this.dialogService.open(RecepcionEquipoComponent, {
           header: 'Nuevo folio',
-          width: '50%',
+          width: '80%',
+          style: { maxWidth: '940px' },
+          breakpoints: {
+            '960px': '90vw',
+            '640px': '100vw'
+          },
           contentStyle: { overflow: 'auto' },
           closable: true,
           dismissableMask: true,
@@ -177,8 +182,13 @@ nuevoFolio(): void {
       editarFolio(folio: any): void {
   // 1. Abrir el modal usando el DialogService
   this.ref = this.dialogService.open(RecepcionEquipoComponent, {
-    header: `Edicion de Folio: ${folio.folio}`, 
-    width: '68%',
+    header: `Edicion de Folio: ${folio.folio}`,
+    width: '80%',
+    style: { maxWidth: '940px' },
+    breakpoints: {
+      '960px': '90vw',
+      '640px': '100vw'
+    },
     contentStyle: { overflow: 'auto' },
     closable: true,
     dismissableMask: true,

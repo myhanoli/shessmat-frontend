@@ -50,6 +50,18 @@
     width: 10%;  // Para que el textarea se ajuste completamente
   }
 
+  @media (max-width: 640px) {
+    .container {
+      max-width: 100%;
+      padding: 8px;
+    }
+
+    .form-field {
+      flex: 1 1 100%;
+      min-width: auto;
+    }
+  }
+
   mat-form-field textarea {
     width: 100%;  // Para que el textarea se ajuste completamente
   }

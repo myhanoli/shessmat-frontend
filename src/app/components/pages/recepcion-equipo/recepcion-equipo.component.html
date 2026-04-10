@@ -1,168 +1,180 @@
-<div class="grid">
-  <div class="col-12 md:col-10">
-    <div class="card px-4 py-6">
+<div class="min-h-screen bg-gray-50 py-4">
+  <div class="w-full max-w-full px-3 sm:px-4 lg:px-6">
+    <div class="w-full mx-auto bg-white shadow-xl rounded-3xl p-4 sm:p-6">
+      <h1 class="text-3xl font-bold text-gray-900 text-center mb-6">Recepción de Equipo</h1>
       <p-toast></p-toast>
 
-      <form [formGroup]="formFolio" class="space-y-6">
-        <!-- Primer bloque: Folio y Fecha -->
-        <div class="bg-white shadow rounded-xl p-4 max-w-[850px] mx-auto">
-          <div class="flex flex-col md:flex-row gap-4">
-            
-                 <div class="flex flex-col flex-1">
-              <label class="text-sm font-medium text-gray-700 mb-1">Folio</label>
-              <input type="text" formControlName="folio"  [readonly]="true"
-    class="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-500 bg-gray-100 cursor-not-allowed focus:outline-none" />
+      <form [formGroup]="formFolio" class="space-y-5">
+
+        <section class="bg-gray-50 border border-gray-200 rounded-3xl p-4 sm:p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Información General</h2>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-2">Folio</label>
+              <input
+                type="text"
+                formControlName="folio"
+                readonly
+                class="w-full px-3 py-3 border border-gray-300 rounded-2xl bg-gray-100 text-sm text-gray-600 cursor-not-allowed focus:outline-none"
+              />
             </div>
 
-      <div class="flex flex-col flex-1">
-  <label class="text-sm font-medium text-gray-700 mb-1">Fecha</label>
-
-  <input
-    type="date"
-    formControlName="fecha"
-    [class.bg-gray-100]="formFolio.get('fecha')?.disabled"
-    [class.text-gray-500]="formFolio.get('fecha')?.disabled"
-    [class.cursor-not-allowed]="formFolio.get('fecha')?.disabled"
-    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-</div>
-
-
+            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-2">Fecha</label>
+              <input
+                type="date"
+                formControlName="fecha"
+                [class.bg-gray-100]="formFolio.get('fecha')?.disabled"
+                [class.text-gray-500]="formFolio.get('fecha')?.disabled"
+                [class.cursor-not-allowed]="formFolio.get('fecha')?.disabled"
+                class="w-full px-3 py-3 border border-gray-300 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           </div>
-        </div>
+        </section>
 
-        
-        <!-- Tercer bloque: Datos del Equipo -->
-        <div class="bg-white shadow rounded-xl p-6 max-w-[850px] mx-auto space-y-4">
-          <div class="flex flex-col md:flex-row gap-4">
-            <div class="flex flex-col flex-1">
-              <label class="text-sm font-medium text-gray-700 mb-1">Tipo de Equipo</label>
-              <select formControlName="tipoEquipo"
-         (change)="onTipoEquipoChange($event.target.value)"
-        class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-  <option *ngFor="let tipo of tiposEquipos" [value]="tipo">{{ tipo }}</option>
-</select>
+        <section class="bg-gray-50 border border-gray-200 rounded-3xl p-4 sm:p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Datos del Equipo</h2>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-2">Tipo de Equipo</label>
+              <select
+                formControlName="tipoEquipo"
+                (change)="onTipoEquipoChange($event.target.value)"
+                class="w-full px-3 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option *ngFor="let tipo of tiposEquipos" [value]="tipo">{{ tipo }}</option>
+              </select>
             </div>
 
-           <!-- Marca dinámica -->
-<div class="flex flex-col flex-1">
-  <label class="text-sm font-medium text-gray-700 mb-1">Marca</label>
-  <select formControlName="marca"
-          (change)="onMarcaChange($event.target.value)"
-          class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-    <option value="" disabled selected>Selecciona una marca</option>
-    <option *ngFor="let marca of marcasActuales" [value]="marca">{{ marca }}</option>
-  </select>
-</div>
+            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-2">Marca</label>
+              <select
+                formControlName="marca"
+                (change)="onMarcaChange($event.target.value)"
+                class="w-full px-3 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="" disabled selected>Selecciona una marca</option>
+                <option *ngFor="let marca of marcasActuales" [value]="marca">{{ marca }}</option>
+              </select>
+            </div>
           </div>
 
-       <!-- Campos de Modelo y Num. Serie según reglas -->
-<div *ngIf="mostrarModeloSerie" class="flex flex-col md:flex-row gap-4 mt-4">
-  <div class="flex flex-col flex-1">
-    <label class="text-sm font-medium text-gray-700 mb-1">Modelo</label>
-    <input type="text" formControlName="modelo"
-           class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-  </div>
-  <div class="flex flex-col flex-1">
-    <label class="text-sm font-medium text-gray-700 mb-1">Num. Serie</label>
-    <input type="text" formControlName="numSerie"
-           class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-  </div>
-</div>
-  <!-- Preguntas dinámicas si es Laptop -->
-  <div  *ngIf="isLaptop || isCelular" class="flex flex-col md:flex-row gap-4">
-    <!-- ¿Viene encendido? -->
-  <div class="flex flex-col md:flex-row gap-4 items-center">
-    <label class="text-sm font-medium text-gray-700 mb-1">¿Viene encendido?</label>
-    <div class="flex gap-4">
-      <label>
-        <input type="radio" formControlName="encendido" [value]="true"> Sí
-      </label>
-      <label>
-        <input type="radio" formControlName="encendido" [value]="false"> No
-      </label>
-    </div>
-  </div>
+          <div *ngIf="mostrarModeloSerie" class="grid grid-cols-1 gap-4 md:grid-cols-2 mt-4">            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-2">Modelo</label>
+              <input
+                type="text"
+                formControlName="modelo"
+                class="w-full px-3 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-2">Num. Serie</label>
+              <input
+                type="text"
+                formControlName="numSerie"
+                class="w-full px-3 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
 
-  <!-- ¿Trae cargador? -->
-  <div class="flex flex-col md:flex-row gap-4 items-center">
-    <label class="text-sm font-medium text-gray-700 mb-1">¿Trae cargador?</label>
-    <div class="flex gap-4">
-      <label>
-        <input type="radio" formControlName="traeCargador" [value]="true"> Sí
-      </label>
-      <label>
-        <input type="radio" formControlName="traeCargador" [value]="false"> No
-      </label>
-    </div>
-  </div>
+          <div *ngIf="isLaptop || isCelular" class="grid grid-cols-1 gap-4 md:grid-cols-2 mt-4">            <div class="flex flex-col gap-3">
+              <label class="text-sm font-medium text-gray-700">¿Viene encendido?</label>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <label class="inline-flex items-center gap-2">
+                  <input type="radio" formControlName="encendido" [value]="true" /> Sí
+                </label>
+                <label class="inline-flex items-center gap-2">
+                  <input type="radio" formControlName="encendido" [value]="false" /> No
+                </label>
+              </div>
+            </div>
 
-     <!-- Campos de cargador solo si trae cargador -->
-  <div *ngIf="formFolio.get('traeCargador')?.value" class="flex flex-col md:flex-row gap-4">
-    <div class="flex flex-col flex-1">
-      <label class="text-sm font-medium text-gray-700 mb-1">Marca del cargador</label>
-      <input type="text" formControlName="marcaCargador"
-             class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-    </div>
-    <div class="flex flex-col flex-1">
-      <label class="text-sm font-medium text-gray-700 mb-1">Num. Serie del cargador</label>
-      <input type="text" formControlName="numSerieCargador"
-             class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-    </div>
-  </div>
- </div>
+            <div class="flex flex-col gap-3">
+              <label class="text-sm font-medium text-gray-700">¿Trae cargador?</label>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <label class="inline-flex items-center gap-2">
+                  <input type="radio" formControlName="traeCargador" [value]="true" /> Sí
+                </label>
+                <label class="inline-flex items-center gap-2">
+                  <input type="radio" formControlName="traeCargador" [value]="false" /> No
+                </label>
+              </div>
+            </div>
+          </div>
 
+          <div *ngIf="formFolio.get('traeCargador')?.value" class="grid grid-cols-1 gap-4 md:grid-cols-2 mt-4">
+            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-2">Marca del cargador</label>
+              <input
+                type="text"
+                formControlName="marcaCargador"
+                class="w-full px-3 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-2">Num. Serie del cargador</label>
+              <input
+                type="text"
+                formControlName="numSerieCargador"
+                class="w-full px-3 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+        </section>
 
-
-
+        <section class="bg-gray-50 border border-gray-200 rounded-3xl p-4 sm:p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Detalle de Falla</h2>
           <div class="flex flex-col">
-            <label class="text-sm font-medium text-gray-700 mb-1">Descripcion de falla por cliente</label>
-            <textarea id="comentarios" name="comentarios" [(ngModel)]="folio.comentarios" formControlName="comentarios"
-              class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full h-24"></textarea>
+            <label class="text-sm font-medium text-gray-700 mb-2">Descripción de falla por cliente</label>
+            <textarea
+              id="comentarios"
+              name="comentarios"
+              [(ngModel)]="folio.comentarios"
+              formControlName="comentarios"
+              class="w-full px-3 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[140px]"
+            ></textarea>
+          </div>
+        </section>
+
+        <section class="bg-gray-50 border border-gray-200 rounded-3xl p-4 sm:p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Datos del Cliente</h2>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-2">Num. Cliente</label>
+              <span class="w-full px-3 py-3 border border-gray-300 rounded-2xl bg-gray-100 text-sm text-gray-700">
+                {{ formFolio.get('numCliente')?.value }}
+              </span>
+            </div>
+            <div class="flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-2">Nombre</label>
+              <span class="w-full px-3 py-3 border border-gray-300 rounded-2xl bg-gray-100 text-sm text-gray-700">
+                {{ formFolio.get('nombre')?.value }}
+              </span>
+            </div>
           </div>
 
-
-          <!-- Botón Agregar Cliente -->
-        <div class="bg-white shadow rounded-xl p-2 max-w-[850px] mx-auto text-center md:text-left">
-          <button type="button" (click)="addClient()"
-            class="bg-green-600 hover:bg-green-600 text-white rounded-full p-3 shadow transition">
-            <i class="pi pi-plus"></i>
-          </button>
-        </div>
-
-        <!-- Segundo bloque: Datos del Cliente -->
-       <div class="bg-white shadow rounded-xl p-4 max-w-[850px] mx-auto">
-  <div class="flex flex-col md:flex-row gap-4">
-
-    <div class="flex flex-col flex-1">
-      <label class="text-sm font-medium text-gray-700 mb-1">Num. Cliente</label>
-      <span class="border rounded-lg px-3 py-2 text-sm bg-gray-100 ">
-        {{ formFolio.get('numCliente')?.value }}
-      </span>
-    </div>
-
-    <div class="flex flex-col flex-1">
-      <label class="text-sm font-medium text-gray-700 mb-1">Nombre</label>
-      <span class="border rounded-lg px-3 py-2 text-sm bg-gray-100 ">
-        {{ formFolio.get('nombre')?.value }}
-      </span>
-    </div>
-
-  </div>
-</div>
-
-
-
-          <div class="mt-4 flex justify-center md:justify-end">
-            <button type="submit"   (click)="guardarFolio()"
-              class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow transition flex items-center gap-2">
-              <i class="pi pi-check"></i> Guardar
+          <div class="mt-5 flex justify-center md:justify-end">
+            <button
+              type="button"
+              (click)="addClient()"
+              class="inline-flex items-center justify-center gap-2 rounded-2xl bg-green-600 px-5 py-3 text-white shadow hover:bg-green-700 transition w-full md:w-auto"
+            >
+              <i class="pi pi-plus"></i>
+              Agregar Cliente
             </button>
           </div>
+        </section>
+
+        <div class="flex justify-center md:justify-end">
+          <button
+            type="submit"
+            (click)="guardarFolio()"
+            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-8 py-3 text-white shadow hover:bg-blue-700 transition w-full md:w-auto"
+          >
+            <i class="pi pi-check"></i>
+            Guardar
+          </button>
         </div>
       </form>
-
-   
     </div>
   </div>
 </div>

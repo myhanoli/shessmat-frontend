@@ -1,5 +1,5 @@
 <div class="grid">
-    <div class="col-10">
+    <div class="col-12 lg:col-10">
         <div class="card px-6 py-6">
             <p-toast></p-toast>
             
@@ -43,10 +43,10 @@
                         <th pSortableColumn="code">Id <p-sortIcon field="code"></p-sortIcon></th>
                         <th pSortableColumn="name">Nombre <p-sortIcon field="name"></p-sortIcon></th>
                         <th>Paterno</th>
-                        <th pSortableColumn="price">Materno <p-sortIcon field="price"></p-sortIcon></th>
+                        <th pSortableColumn="price" class="hide-mobile">Materno <p-sortIcon field="price"></p-sortIcon></th>
                         <th pSortableColumn="category">Télefono <p-sortIcon field="category"></p-sortIcon></th>
                         <th pSortableColumn="rating">Correo <p-sortIcon field="rating"></p-sortIcon></th>
-                        <th pSortableColumn="inventoryStatus">Rol<p-sortIcon field="inventoryStatus"></p-sortIcon></th>
+                        <th pSortableColumn="inventoryStatus" class="hide-mobile">Rol<p-sortIcon field="inventoryStatus"></p-sortIcon></th>
                         <th></th>
                     </tr>
                 </ng-template>
@@ -66,7 +66,7 @@
                             {{cliente.apellidoPat}}
                             <!--<img [src]="'assets/demo/images/product/' + product.image" [alt]="product.name" width="100" class="shadow-4" />-->
                         </td>
-                        <td style="width:14%; min-width:8rem;">
+                        <td style="width:14%; min-width:8rem;" class="hide-mobile">
                             <span class="p-column-title">Materno</span>
                             {{cliente.apellidoMat}}
                         </td>
@@ -80,7 +80,7 @@
                             <!--<p-rating [ngModel]="product.rating" [readonly]="true" [cancel]="false"></p-rating>-->
                         </td>
                         <td style="width:14%; min-width: 10rem;"><span class="p-column-title">Status</span>
-                            <span [class]="'cliente-badge status-' + (cliente.inventoryStatus ? cliente.inventoryStatus.toLowerCase() : '')">{{cliente.role}}</span>
+                            <span [class]="'cliente-badge status-' + (cliente.inventoryStatus ? cliente.inventoryStatus.toLowerCase() : '')" class="hide-mobile">{{cliente.role}}</span>
                         </td>
                         <td>
                             <div class="flex">
@@ -93,7 +93,7 @@
             </p-table>
         </div>
 
-        <p-dialog [(visible)]="clientDialog" [style]="{width: '450px'}" header="Detalle de usuario" [modal]="true" class="p-fluid">
+        <p-dialog [(visible)]="clientDialog" [style]="{'width': '95vw', 'max-width': '450px'}" header="Detalle de usuario" [modal]="true" class="p-fluid">
             <ng-template pTemplate="content">
                 <!--<img [src]="'assets/demo/images/product/' + product.image" [alt]="product.image" width="150" class="mt-0 mx-auto mb-5 block shadow-2" *ngIf="product.image">-->
                 <div class="field">

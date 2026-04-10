@@ -1,132 +1,146 @@
-<div class="grid grid-cols-12 gap-4 px-2 sm:px-4 lg:px-6">
-  <div class="col-span-12 lg:col-span-10">
+<div class="w-full px-2 sm:px-4 lg:px-6">
+  <div class="max-w-screen-xl mx-auto">
     <div class="card p-4 sm:p-6">
       <p-toast></p-toast>
 
       <!-- Toolbar -->
       <p-toolbar styleClass="mb-4">
         <ng-template pTemplate="left">
-          <div class="flex flex-wrap gap-2">
-            <button pButton pRipple icon="pi pi-plus" class="p-button-success"
+          <div class="flex flex-wrap gap-2 justify-center sm:justify-start">
+            <button pButton pRipple icon="pi pi-plus" class="p-button-success w-full sm:w-auto"
               pTooltip="Agregar Cliente" showDelay="1000" hideDelay="300"
               tooltipPosition="top" (click)="nuevoCliente()"></button>
-            <button pButton pRipple icon="pi pi-trash" class="p-button-danger"
+            <button pButton pRipple icon="pi pi-trash" class="p-button-danger w-full sm:w-auto"
               pTooltip="Eliminar Clientes" showDelay="1000" hideDelay="300"
               tooltipPosition="top" (click)="deleteSelectedProducts()"
               [disabled]="!selectedProducts || !selectedProducts.length"></button>
-              <button 
-  pButton pRipple 
-  icon="pi pi-filter"
-  label="Filtros"
-  class="p-button-info"
-  pTooltip="Mostrar/Ocultar Filtros"
-  (click)="toggleFiltros()">
-</button>
+            <button pButton pRipple icon="pi pi-filter" label="Filtros" class="p-button-info w-full sm:w-auto"
+              pTooltip="Mostrar/Ocultar Filtros" showDelay="1000" hideDelay="300"
+              tooltipPosition="top" (click)="toggleFiltros()"></button>
           </div>
         </ng-template>
         <ng-template pTemplate="right">
-          <button pButton pRipple label="Exportar" icon="pi pi-upload" class="p-button-help"
+          <button pButton pRipple label="Exportar" icon="pi pi-upload" class="p-button-help w-full sm:w-auto"
             (click)="dt.exportCSV()"></button>
         </ng-template>
       </p-toolbar>
 
-  <!-- Filtros de Búsqueda (centrados y más abajo) -->
-<!--<div class="mt-10 mb-14 flex justify-center">-->
-  <div *ngIf="mostrarFiltros" 
-     class="mt-10 mb-14 flex justify-center transition-all duration-300">
-  <div class="w-full max-w-4xl">
-
-    <!-- FILA 1: NOMBRE / PATERNO / TELÉFONO -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
-
-      <!-- Nombre -->
-      <div>
-        <label class="text-sm font-medium text-gray-700">Nombre</label>
-        <input 
-          type="text" 
-          pInputText 
-          [(ngModel)]="filtros.nombre" 
-          placeholder="Nombre"
-          class="mt-1 w-full"
-        />
+  <!-- Área de Filtros Rediseñada -->
+  <div *ngIf="mostrarFiltros" class="mt-6 mb-8 transition-all duration-300">
+    <div class="filter-panel bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
+      <!-- Header del Panel -->
+      <div class="bg-gray-100 text-gray-800 px-6 py-4 flex items-center gap-3 border-b border-gray-200">
+        <i class="pi pi-filter text-xl text-gray-600"></i>
+        <h3 class="text-lg font-semibold">Filtros de Búsqueda</h3>
       </div>
 
-      <!-- Apellido Paterno -->
-      <div>
-        <label class="text-sm font-medium text-gray-700">Apellido Paterno</label>
-        <input 
-          type="text" 
-          pInputText 
-          [(ngModel)]="filtros.apellidoPat" 
-          placeholder="Apellido Paterno"
-          class="mt-1 w-full"
-        />
-      </div>
+      <!-- Contenido del Panel -->
+      <div class="p-6 space-y-6">
+        <!-- Fila Superior: Campos de Texto -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="filter-field">
+            <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+              <i class="pi pi-user text-gray-500"></i>
+              Nombre
+            </label>
+            <input
+              type="text"
+              pInputText
+              [(ngModel)]="filtros.nombre"
+              placeholder="Buscar por nombre..."
+              class="filter-input"
+            />
+          </div>
 
-      <!-- Teléfono -->
-      <div>
-        <label class="text-sm font-medium text-gray-700">Teléfono</label>
-        <input 
-          type="text" 
-          pInputText 
-          [(ngModel)]="filtros.telefono" 
-          placeholder="Teléfono"
-          class="mt-1 w-full"
-        />
-      </div>
+          <div class="filter-field">
+            <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+              <i class="pi pi-id-card text-gray-500"></i>
+              Apellido Paterno
+            </label>
+            <input
+              type="text"
+              pInputText
+              [(ngModel)]="filtros.apellidoPat"
+              placeholder="Buscar por apellido..."
+              class="filter-input"
+            />
+          </div>
 
+          <div class="filter-field">
+            <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+              <i class="pi pi-phone text-gray-500"></i>
+              Teléfono
+            </label>
+            <input
+              type="text"
+              pInputText
+              [(ngModel)]="filtros.telefono"
+              placeholder="Buscar por teléfono..."
+              class="filter-input"
+            />
+          </div>
+        </div>
+
+        <!-- Fila Inferior: Fechas y Acciones -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 items-end">
+          <div class="filter-field">
+            <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+              <i class="pi pi-calendar text-gray-500"></i>
+              Fecha Inicio
+            </label>
+            <p-calendar
+              [(ngModel)]="filtros.fechaInicio"
+              dateFormat="yy-mm-dd"
+              class="w-full"
+              inputStyleClass="filter-input"
+              placeholder="Seleccionar fecha"
+            ></p-calendar>
+          </div>
+
+          <div class="filter-field">
+            <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+              <i class="pi pi-calendar text-gray-500"></i>
+              Fecha Fin
+            </label>
+            <p-calendar
+              [(ngModel)]="filtros.fechaFin"
+              dateFormat="yy-mm-dd"
+              class="w-full"
+              inputStyleClass="filter-input"
+              placeholder="Seleccionar fecha"
+            ></p-calendar>
+          </div>
+
+          <!-- Espacio vacío para alineación -->
+          <div class="hidden lg:block"></div>
+
+          <!-- Botones de Acción -->
+          <div class="filter-actions flex flex-col sm:flex-row gap-3">
+            <button
+              pButton pRipple
+              label="Buscar"
+              icon="pi pi-search"
+              class="p-button-primary"
+              (click)="aplicarFiltros()"
+            ></button>
+            <button
+              pButton pRipple
+              label="Limpiar"
+              icon="pi pi-times"
+              class="p-button-secondary"
+              (click)="limpiarFiltros()"
+            ></button>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <!-- FILA 2: FECHAS + BOTONES -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
-  <div>
-        <label class="text-sm font-medium text-gray-700">Fecha de Alta:</label>
-       
-    <div>  <label class="text-sm font-medium text-gray-700">Inicio:</label>
-        <p-calendar 
-          [(ngModel)]="filtros.fechaInicio" 
-          dateFormat="yy-mm-dd" 
-         
-          class="mt-1 w-full">
-        </p-calendar> <label class="text-sm font-medium text-gray-700">Fin:</label>
-        <p-calendar 
-          [(ngModel)]="filtros.fechaFin" 
-          dateFormat="yy-mm-dd" 
-        
-          class="mt-1 w-full">
-        </p-calendar></div>
-       
-      </div>
-
-      <!-- Botones -->
-      <div class="flex justify-center md:justify-end gap-4 mt-6 md:mt-0">
-        <button 
-          pButton pRipple 
-          label="Buscar" 
-          icon="pi pi-search" 
-          class="p-button-primary w-20"
-          (click)="aplicarFiltros()">
-        </button>
-
-        <button 
-          pButton pRipple 
-          label="Limpiar" 
-          icon="pi pi-times" 
-          class="p-button-secondary w-20"
-          (click)="limpiarFiltros()">
-        </button>
-      </div>
-
-    </div>
-
   </div>
-</div>
 
 
 
 
       <!-- Tabla responsive -->
-      <div class="overflow-x-auto w-full h-[600px]">
+      <div class="overflow-x-auto w-full h-96 md:h-[600px]">
         <p-table #dt [value]="clientesFiltrados" [columns]="cols" styleClass="p-datatable-sm w-full"
           responsiveLayout="scroll" [rows]="5" [paginator]="true" [rowsPerPageOptions]="[5,10,20]"
           [showCurrentPageReport]="true" [(selection)]="selectedProducts" selectionMode="multiple"
@@ -134,35 +148,35 @@
 
           <ng-template pTemplate="header">
             <tr>
-              <th class="px-4 py-3 text-left">
+              <th class="px-2 py-2 sm:px-4 sm:py-3 text-left">
                 <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
               </th>
-              <th class="px-4 py-3 text-left" pSortableColumn="id"> Num.Cliente </th>
-              <th class="px-4 py-3 text-left" pSortableColumn="nombre"> Nombre </th>
-              <th class="px-4 py-3 text-left">Paterno</th>
-              <th class="px-4 py-3 text-left">Materno</th>
-              <th class="px-4 py-3 text-left">Teléfono</th>
-              <th class="px-4 py-3 text-left">Correo</th>
-              <th class="px-4 py-3 text-left">Dirección</th>
-              <th class="px-4 py-3 text-left">Fecha de Alta</th>
-              <th class="px-4 py-3"></th>
+              <th class="px-2 py-2 sm:px-4 sm:py-3 text-left" pSortableColumn="id"> Num.Cliente </th>
+              <th class="px-2 py-2 sm:px-4 sm:py-3 text-left" pSortableColumn="nombre"> Nombre </th>
+              <th class="px-2 py-2 sm:px-4 sm:py-3 text-left">Paterno</th>
+              <th class="px-2 py-2 sm:px-4 sm:py-3 text-left hide-mobile">Materno</th>
+              <th class="px-2 py-2 sm:px-4 sm:py-3 text-left">Teléfono</th>
+              <th class="px-2 py-2 sm:px-4 sm:py-3 text-left">Correo</th>
+              <th class="px-2 py-2 sm:px-4 sm:py-3 text-left hide-mobile">Dirección</th>
+              <th class="px-2 py-2 sm:px-4 sm:py-3 text-left hide-mobile">Fecha de Alta</th>
+              <th class="px-2 py-2 sm:px-4 sm:py-3"></th>
             </tr>
           </ng-template>
 
           <ng-template pTemplate="body" let-cliente>
             <tr class="hover:bg-gray-50" (click)="seleccionarCliente(cliente)">
-              <td class="px-4 py-2">
+              <td class="px-2 py-2 sm:px-4 sm:py-2">
                 <p-tableCheckbox [value]="cliente"></p-tableCheckbox>
               </td>
-              <td class="px-4 py-2">{{ cliente.numCliente }}</td>
-              <td class="px-4 py-2">{{ cliente.nombre }}</td>
-              <td class="px-4 py-2">{{ cliente.apellidoPat }}</td>
-              <td class="px-4 py-2">{{ cliente.apellidoMat }}</td>
-              <td class="px-4 py-2">{{ cliente.telefono }}</td>
-              <td class="px-4 py-2">{{ cliente.correo }}</td>
-              <td class="px-4 py-2">{{ cliente.direccion }}</td>
-              <td class="px-4 py-2">{{ cliente.fechaAlta }}</td>
-              <td class="px-4 py-2">
+              <td class="px-2 py-2 sm:px-4 sm:py-2">{{ cliente.numCliente }}</td>
+              <td class="px-2 py-2 sm:px-4 sm:py-2">{{ cliente.nombre }}</td>
+              <td class="px-2 py-2 sm:px-4 sm:py-2">{{ cliente.apellidoPat }}</td>
+              <td class="px-2 py-2 sm:px-4 sm:py-2 hide-mobile">{{ cliente.apellidoMat }}</td>
+              <td class="px-2 py-2 sm:px-4 sm:py-2">{{ cliente.telefono }}</td>
+              <td class="px-2 py-2 sm:px-4 sm:py-2">{{ cliente.correo }}</td>
+              <td class="px-2 py-2 sm:px-4 sm:py-2 hide-mobile">{{ cliente.direccion }}</td>
+              <td class="px-2 py-2 sm:px-4 sm:py-2 hide-mobile">{{ cliente.fechaAlta }}</td>
+              <td class="px-2 py-2 sm:px-4 sm:py-2">
                 <div class="flex gap-2 justify-center sm:justify-start">
                   <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success"
                     pTooltip="Editar" (click)="editClient(cliente)"></button>
@@ -178,7 +192,7 @@
       <!-- Diálogo -->
       <p-dialog
   [(visible)]="clientDialog"
-  [style]="{ width: '100%', maxWidth: '500px' }"
+  [style]="{'width': '90vw', 'max-width': '700px'}"
   header="Datos del Cliente"
   [modal]="true"
   [closable]="false"
@@ -205,7 +219,7 @@
       </div>
 
       <!-- Apellidos -->
-      <div class="field col-12 md:col-6">
+      <div class="field col-12 lg:col-6">
         <label for="apellidoPat">Apellido Paterno *</label>
         <input
           id="apellidoPat"
@@ -216,7 +230,7 @@
         />
       </div>
 
-      <div class="field col-12 md:col-6">
+      <div class="field col-12 lg:col-6">
         <label for="apellidoMat">Apellido Materno *</label>
         <input
           id="apellidoMat"
@@ -228,7 +242,7 @@
       </div>
 
       <!-- Contacto -->
-      <div class="field col-12 md:col-6">
+      <div class="field col-12 lg:col-6">
         <label for="telefono">Teléfono *</label>
         <input
           id="telefono"
@@ -239,7 +253,7 @@
         />
       </div>
 
-      <div class="field col-12 md:col-6">
+      <div class="field col-12 lg:col-6">
         <label for="correo">Correo electrónico *</label>
         <input
           id="correo"
@@ -263,7 +277,7 @@
       </div>
 
       <!-- Fecha -->
-    <div class="field col-12 md:col-6 lg:col-4">
+    <div class="field col-12 lg:col-6">
   <label for="fechaAlta">Fecha de Alta</label>
 <p-calendar
   id="fechaAlta"
@@ -281,7 +295,7 @@
   </ng-template>
 
   <ng-template pTemplate="footer">
-    <div class="flex justify-end gap-2">
+    <div class="flex justify-center lg:justify-end gap-2">
       
       <button
         pButton
