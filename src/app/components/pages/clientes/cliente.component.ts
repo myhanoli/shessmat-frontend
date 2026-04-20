@@ -11,6 +11,7 @@ import { Cliente2 } from 'src/app/interface/cliente2';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Optional } from '@angular/core';
 import { catchError, map, of, switchMap } from 'rxjs';
+import { RoleService } from 'src/app/service/role.service';
 
 
 @Component({
@@ -45,7 +46,17 @@ export class ClienteComponent implements OnInit {
 
     mostrarFiltros: boolean = false;
 
-    constructor(@Optional() public ref: DynamicDialogRef,private productService: ProductService, private messageService: MessageService,private _clientesService:ClientesService) { }
+    constructor(@Optional() public ref: DynamicDialogRef,private productService: ProductService, private messageService: MessageService,private _clientesService:ClientesService, public roleService: RoleService) { }
+
+    maskPhone(phone: string): string {
+        if (!phone) return '';
+        if (this.roleService.isAdmin()) {
+            return phone;
+        } else {
+            // Mask all digits except the last 4
+            return phone.replace(/\d(?=\d{4})/g, '*');
+        }
+    }
 
     ngOnInit() {
         this.btnGuardar = false;

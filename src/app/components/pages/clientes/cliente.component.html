@@ -172,7 +172,7 @@
               <td class="px-2 py-2 sm:px-4 sm:py-2">{{ cliente.nombre }}</td>
               <td class="px-2 py-2 sm:px-4 sm:py-2">{{ cliente.apellidoPat }}</td>
               <td class="px-2 py-2 sm:px-4 sm:py-2 hide-mobile">{{ cliente.apellidoMat }}</td>
-              <td class="px-2 py-2 sm:px-4 sm:py-2">{{ cliente.telefono }}</td>
+              <td class="px-2 py-2 sm:px-4 sm:py-2">{{ maskPhone(cliente.telefono) }}</td>
               <td class="px-2 py-2 sm:px-4 sm:py-2">{{ cliente.correo }}</td>
               <td class="px-2 py-2 sm:px-4 sm:py-2 hide-mobile">{{ cliente.direccion }}</td>
               <td class="px-2 py-2 sm:px-4 sm:py-2 hide-mobile">{{ cliente.fechaAlta }}</td>
@@ -245,12 +245,16 @@
       <div class="field col-12 lg:col-6">
         <label for="telefono">Teléfono *</label>
         <input
+          *ngIf="roleService.isAdmin()"
           id="telefono"
           type="tel"
           pInputText
           placeholder="Ej. 9611234567"
           [(ngModel)]="cliente.telefono"
         />
+        <span *ngIf="!roleService.isAdmin()" class="p-inputtext p-component" style="display: block; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; background-color: #f9fafb;">
+          {{ maskPhone(cliente.telefono) }}
+        </span>
       </div>
 
       <div class="field col-12 lg:col-6">

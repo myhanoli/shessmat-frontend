@@ -10,7 +10,7 @@ export const environment = {
   
   //urlHost:'https://shessmat-backend-production.up.railway.app/',
   //urlApi: 'https://shessmat-backend-production.up.railway.app/api/v1/',
-  
+    
   urlHost:'https://shessmat-backend-production-4659.up.railway.app/',
   urlApi: 'https://shessmat-backend-production-4659.up.railway.app/api/v1/',
   userId:1,
