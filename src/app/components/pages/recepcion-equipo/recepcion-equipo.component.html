@@ -122,14 +122,28 @@
         </section>
 
         <section class="bg-gray-50 border border-gray-200 rounded-3xl p-4 sm:p-6">
-          <h2 class="text-xl font-semibold text-gray-900 mb-4">Detalle de Falla</h2>
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Descripción de falla por cliente</h2>
           <div class="flex flex-col">
-            <label class="text-sm font-medium text-gray-700 mb-2">Descripción de falla por cliente</label>
+            <!--<label class="text-sm font-medium text-gray-700 mb-2">Descripción de falla por cliente</label>-->
             <textarea
               id="comentarios"
               name="comentarios"
               [(ngModel)]="folio.comentarios"
               formControlName="comentarios"
+              class="w-full px-3 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[140px]"
+            ></textarea>
+          </div>
+        </section>
+
+        <section class="bg-gray-50 border border-gray-200 rounded-3xl p-4 sm:p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Observaciones</h2>
+          <div class="flex flex-col">
+            <!--<label class="text-sm font-medium text-gray-700 mb-2">Observaciones</label>-->
+            <textarea
+              id="observaciones"
+              name="observaciones"
+              [(ngModel)]="folio.observaciones"
+              formControlName="observaciones"
               class="w-full px-3 py-3 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[140px]"
             ></textarea>
           </div>

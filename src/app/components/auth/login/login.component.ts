@@ -1,81 +1,79 @@
-import { Component,OnInit } from '@angular/core';
-
-import { FormBuilder, Validators,ReactiveFormsModule,FormGroup, FormControl  } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, Validators, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
-
 import { CommonModule } from '@angular/common';
 import { LoginService } from 'src/app/service/login.service';
 import { LoginRequest } from 'src/app/model/loginRequest';
 
 @Component({
     selector: 'app-login',
-     templateUrl: './login.component.html',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
     styles: [`
         :host ::ng-deep .pi-eye,
         :host ::ng-deep .pi-eye-slash {
-            transform:scale(1.6);
+            transform: scale(1.6);
             margin-right: 1rem;
             color: var(--primary-color) !important;
+        }
+        
+        :host ::ng-deep .p-password .p-password-input {
+            width: 100%;
         }
     `]
 })
 export class LoginComponent implements OnInit {
-    loginError:string="";
-    loginForm=this.formBuilder.group({
-      username:['',[Validators.required,Validators.email]],
-      password: ['',Validators.required],
-    })
-    
-    /*loginForm = new FormGroup({
-        username: new FormControl('', [Validators.required,Validators.email]),
-        password: new FormControl('', [Validators.required])
-      });*/
+    loginError: string = "";
+    isLoading: boolean = false;
 
-    constructor(private formBuilder:FormBuilder, private router:Router, private loginService: LoginService) { }
+    loginForm = this.formBuilder.group({
+        username: ['', [Validators.required, Validators.email]],
+        password: ['', Validators.required],
+    });
 
-    
- 
+    constructor(
+        private formBuilder: FormBuilder,
+        private router: Router,
+        private loginService: LoginService
+    ) { }
+
     ngOnInit(): void {
-       
+        // Clear any previous errors
+        this.loginError = "";
     }
 
-    //valCheck: string[] = ['remember'];
-    //password!: string;
-
-
-      get email(){
+    get email() {
         return this.loginForm.controls.username;
-      }
-    
-      get password()
-      {
+    }
+
+    get password() {
         return this.loginForm.controls.password;
-      }
+    }
 
-    login(){
-        console.log("credentials1: " + this.loginForm.controls.username.value )
-        if(this.loginForm.valid){
-          this.loginError="";
-          this.loginService.login(this.loginForm.value as LoginRequest).subscribe({
-            next: (userData) => {
-              console.log(userData);
-            },
-            error: (errorData) => {
-              console.error(errorData);
-              this.loginError=errorData;
-            },
-            complete: () => {
-              console.info("Login completo");
-              this.router.navigateByUrl('/layout');
-              this.loginForm.reset();
-            }
-          })
-    
-        }
-        else{
-          this.loginForm.markAllAsTouched();
-          alert("Error al ingresar los datos.");
-        }
-      }
+    login() {
+        this.loginError = "";
 
+        if (this.loginForm.valid) {
+            this.isLoading = true;
+            
+            this.loginService.login(this.loginForm.value as LoginRequest).subscribe({
+                next: (userData) => {
+                    console.log(userData);
+                },
+                error: (errorData) => {
+                    console.error(errorData);
+                    this.loginError = errorData || "Error al iniciar sesión. Por favor intenta de nuevo.";
+                    this.isLoading = false;
+                },
+                complete: () => {
+                    console.info("Login completado");
+                    this.isLoading = false;
+                    this.router.navigateByUrl('/layout');
+                    this.loginForm.reset();
+                }
+            });
+        } else {
+            this.loginForm.markAllAsTouched();
+        }
+    }
 }

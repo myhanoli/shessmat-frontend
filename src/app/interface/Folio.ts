@@ -13,6 +13,7 @@ export class Folio {
   modelo: string;
   numSerie: string;
   comentarios: string;
+  observaciones: string;
   encendido: boolean;
   traeCargador: boolean;
   marcaCargador: string;

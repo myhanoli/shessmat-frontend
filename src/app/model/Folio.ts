@@ -26,6 +26,7 @@ export interface Folio {
   modelo?: string;
   numSerie?: string;
   comentarios?: string;
+  observaciones?: string;
 
   // Nuevos campos
   encendido?: boolean;

@@ -113,7 +113,8 @@ accion: 'crear' | 'editar' = 'crear';
   traeCargador: [null],   // nuevo
   marcaCargador: [''],    // nuevo
   numSerieCargador: [''] , // nuevo
-      comentarios: ['', Validators.maxLength(500)]
+      comentarios: ['', Validators.maxLength(500)],
+      observaciones: ['', Validators.maxLength(500)]
     });
     //this.generarFolio();  // Genera el folio al iniciar el formulario
     
@@ -142,7 +143,8 @@ accion: 'crear' | 'editar' = 'crear';
                 traeCargador: folioAEditar.traeCargador,
                 marcaCargador: folioAEditar.marcaCargador,
                 numSerieCargador: folioAEditar.numSerieCargador,
-                comentarios: folioAEditar.comentarios
+                comentarios: folioAEditar.comentarios,
+                observaciones: folioAEditar.observaciones
             });
 
            
@@ -248,6 +250,7 @@ this.folioRequest.traeCargador = this.formFolio.get('traeCargador')?.value;
 this.folioRequest.marcaCargador = this.formFolio.get('marcaCargador')?.value;
 this.folioRequest.numSerieCargador = this.formFolio.get('numSerieCargador')?.value;
 this.folioRequest.comentarios = this.formFolio.get('comentarios')?.value;
+this.folioRequest.observaciones = this.formFolio.get('observaciones')?.value;
 this.folioRequest.clienteId = this.formFolio.get('numCliente')?.value;
 
   this.folioService.creaFolio(this.folioRequest).subscribe({
@@ -506,6 +509,7 @@ actualizarFolio(): void {
     marcaCargador: this.formFolio.get('marcaCargador')?.value,
     numSerieCargador: this.formFolio.get('numSerieCargador')?.value,
     comentarios: this.formFolio.get('comentarios')?.value,
+    observaciones: this.formFolio.get('observaciones')?.value,
     clienteId: this.formFolio.get('numCliente')?.value
   };
 
