@@ -27,7 +27,7 @@
      <div *ngIf="mostrarFiltros" class="mt-10 mb-12 flex justify-center">
   <div class="w-full max-w-5xl p-6 bg-white shadow-lg rounded-lg">
     
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
 
         <!-- FOLIO -->
         <div>
@@ -74,7 +74,7 @@
 
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 items-end">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 pt-4 items-end">
 
         <!-- MARCA -->
         <div>
@@ -92,7 +92,7 @@
         </div>
 
         <!-- FECHA -->
-        <div>
+        <div class="md:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Creación</label>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-1">
             <div>
@@ -118,6 +118,28 @@
                 [inputStyle]="{'width':'100%'}"
               ></p-calendar>
             </div>
+          </div>
+
+          <div class="mt-4">
+            <label for="estatus-select" class="block text-sm font-medium text-gray-700 mb-2">Estatus</label>
+            <p-multiSelect
+              #estatusSelect
+              inputId="estatus-select"
+              [(ngModel)]="filtros.estatus"
+              [ngModelOptions]="{ standalone: true }"
+              [options]="estatusDisponibles"
+              optionLabel="label"
+              optionValue="value"
+              [showToggleAll]="true"
+              [filter]="false"
+              [showClear]="true"
+              display="chip"
+              defaultLabel="Seleccionar estatus"
+              selectedItemsLabel="{0} estatus seleccionados"
+              (onChange)="estatusSelect.hide(); aplicarFiltros()"
+              (onSelectAllChange)="estatusSelect.hide(); aplicarFiltros()"
+              class="w-full"
+            ></p-multiSelect>
           </div>
         </div>
 

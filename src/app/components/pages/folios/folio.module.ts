@@ -33,6 +33,7 @@ import { FolioRoutingModule } from './folio-routing.module';
 import { FolioComponent } from './folio.component';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { TimelineModule } from 'primeng/timeline';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 
 @NgModule({
@@ -69,7 +70,8 @@ import { TimelineModule } from 'primeng/timeline';
               MatSelectModule,
               MatFormFieldModule,
               AutoCompleteModule,
-              TimelineModule 
+              TimelineModule,
+              MultiSelectModule
              
   ],
       declarations: [FolioComponent]

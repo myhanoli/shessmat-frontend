@@ -38,6 +38,7 @@ export class FolioComponent implements OnInit {
 
   marcas: { label: string; value: string }[] = [];
   equipos: { label: string; value: string }[] = [];
+  estatusDisponibles: DropdownOption[] = [];
   
 
 
@@ -48,13 +49,15 @@ filtros: {
   equipo: Opcion | string | null;
   marca: Opcion | string | null;
   cliente: string;
+  estatus: string[];
 } = {
   folio: '',
   fechaInicio: null,
   fechaFin: null,
   equipo: null,
   marca: null,
-  cliente: ''
+  cliente: '',
+  estatus: []
 };
 
 
@@ -111,7 +114,8 @@ this.foliosFiltrados = this.folios; // <-- aquí todavía está vacío
   ).subscribe({
     next: (data) => {
       this.folios = data;
-      this.foliosFiltrados = [...this.folios];  // ← AQUÍ SÍ CARGA LO QUE YA TIENES
+      this.actualizarEstatusDisponibles();
+      this.aplicarFiltros();
     },
     error: (err) => {
       console.error('Error cargando folios', err);
@@ -130,6 +134,7 @@ aplicarFiltros() {
   const marcaFiltro = typeof this.filtros.marca === 'string'
     ? this.filtros.marca
     : this.filtros.marca?.label;
+  const estatusSeleccionados = new Set((this.filtros.estatus || []).map(estatus => this.normalizarEstatus(estatus)));
 
   this.foliosFiltrados = this.folios.filter(f => {
     
@@ -142,12 +147,12 @@ aplicarFiltros() {
       (!marcaFiltro || f.marca?.toLowerCase().includes(marcaFiltro.toLowerCase()))  && (!this.filtros.cliente ||
             clienteCompleto.includes(this.filtros.cliente.toLowerCase())
       ) &&
+      (estatusSeleccionados.size === 0 || estatusSeleccionados.has(this.normalizarEstatus(this.nombreEstatus(f.estatusActual)))) &&
       (!this.filtros.fechaInicio || new Date(f.fecha) >= new Date(this.filtros.fechaInicio)) &&
       (!this.filtros.fechaFin || new Date(f.fecha) <= new Date(this.filtros.fechaFin))
     );
   });
 }
-
 
 limpiarFiltros() {
   this.filtros = {
@@ -156,10 +161,28 @@ limpiarFiltros() {
     fechaFin: null,
     equipo: '',
     marca: '',
-    cliente: ''
+    cliente: '',
+    estatus: []
   };
 
   this.foliosFiltrados = [...this.folios];
+}
+
+private actualizarEstatusDisponibles(): void {
+  const estatusUnicos = new Map<string, string>();
+
+  this.folios.forEach(folio => {
+    const estatus = this.nombreEstatus(folio.estatusActual);
+    estatusUnicos.set(this.normalizarEstatus(estatus), estatus);
+  });
+
+  this.estatusOptions.forEach(estatus => {
+    estatusUnicos.set(this.normalizarEstatus(estatus.label), estatus.label);
+  });
+
+  this.estatusDisponibles = Array.from(estatusUnicos.values())
+    .sort((a, b) => a.localeCompare(b, 'es'))
+    .map(estatus => ({ label: estatus, value: estatus }));
 }
 
 toggleFiltros() {
@@ -174,12 +197,12 @@ if (typeof estatus === 'string') {
 return estatus?.nombre || estatus?.label || 'Sin estatus';
 }
 
+private normalizarEstatus(estatus: string): string {
+  return estatus.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toUpperCase();
+}
+
 claseEstatus(estatus: { nombre?: string; label?: string } | string | null | undefined): string {
-const nombre = this.nombreEstatus(estatus)
-  .normalize('NFD')
-  .replace(/[\u0300-\u036f]/g, '')
-  .trim()
-  .toUpperCase();
+const nombre = this.normalizarEstatus(this.nombreEstatus(estatus));
 
 const clases: Record<string, string> = {
   'RECIBIDO': 'bg-blue-500',
@@ -288,6 +311,7 @@ abrirSeguimiento(folio: any) {
       if (!this.estatusOptions.some(e => e.label === 'DIAGNOSTICO COMPLETADO')) {
         this.estatusOptions.push({ label: 'DIAGNOSTICO COMPLETADO', value: '5' }); // Reemplaza '5' con el ID real del backend
       }
+      this.actualizarEstatusDisponibles();
     });
   }
 
