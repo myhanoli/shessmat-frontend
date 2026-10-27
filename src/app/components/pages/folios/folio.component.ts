@@ -19,6 +19,7 @@ import { HistorialEstatus } from 'src/app/model/historialEstatus';
 import { SeguimientoFolioDTO } from 'src/app/model/SeguimientoFolioDTO';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { finalize } from 'rxjs/operators';
 
 
 @Component({
@@ -30,6 +31,7 @@ export class FolioComponent implements OnInit {
 
     
   folios: Folio[] = [];
+  cargandoFolios = false;
   cols: any[] = [];
 
   foliosFiltrados: any[] = [];
@@ -103,7 +105,10 @@ this.foliosFiltrados = this.folios; // <-- aquí todavía está vacío
   }
 
  cargarFolios() {
-  this.folioService.getFolios().subscribe({
+  this.cargandoFolios = true;
+  this.folioService.getFolios().pipe(
+    finalize(() => this.cargandoFolios = false)
+  ).subscribe({
     next: (data) => {
       this.folios = data;
       this.foliosFiltrados = [...this.folios];  // ← AQUÍ SÍ CARGA LO QUE YA TIENES
@@ -161,23 +166,60 @@ toggleFiltros() {
   this.mostrarFiltros = !this.mostrarFiltros;
 }
 
+nombreEstatus(estatus: { nombre?: string; label?: string } | string | null | undefined): string {
+if (typeof estatus === 'string') {
+  return estatus;
+}
+
+return estatus?.nombre || estatus?.label || 'Sin estatus';
+}
+
+claseEstatus(estatus: { nombre?: string; label?: string } | string | null | undefined): string {
+const nombre = this.nombreEstatus(estatus)
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .trim()
+  .toUpperCase();
+
+const clases: Record<string, string> = {
+  'RECIBIDO': 'bg-blue-500',
+  'EN DIAGNOSTICO': 'bg-yellow-500',
+  'DIAGNOSTICO COMPLETADO': 'bg-yellow-500',
+  'ESPERA AUTORIZACION': 'bg-orange-500',
+  'EN REPARACION': 'bg-purple-500',
+  'LISTO PARA ENTREGA': 'bg-green-500',
+  'ENTREGADO': 'bg-emerald-700',
+  'CANCELADO': 'bg-red-600',
+  'CERRADO': 'bg-gray-700'
+};
+
+return clases[nombre] || 'bg-gray-500';
+}
+
 
 nuevoFolio(): void {
-  
-     this.ref = this.dialogService.open(RecepcionEquipoComponent, {
-          header: 'Nuevo folio',
-          width: '80%',
-          style: { maxWidth: '940px' },
-          breakpoints: {
-            '960px': '90vw',
-            '640px': '100vw'
-          },
-          contentStyle: { overflow: 'auto' },
-          closable: true,
-          dismissableMask: true,
-          data: {accion: 'nuevo'} 
-        });
-      }
+  this.ref = this.dialogService.open(RecepcionEquipoComponent, {
+    header: 'Nuevo folio',
+    width: '80%',
+    style: { maxWidth: '940px' },
+    breakpoints: {
+      '960px': '90vw',
+      '640px': '100vw'
+    },
+    contentStyle: { overflow: 'auto' },
+    closable: true,
+    dismissableMask: true,
+    data: { accion: 'nuevo' }
+  });
+
+  const dialogRef = this.ref;
+  dialogRef.onClose.subscribe((resultado: boolean | undefined) => {
+    if (resultado) {
+      this.cargarFolios();
+    }
+    this.ref = undefined;
+  });
+}
 
       editarFolio(folio: any): void {
   // 1. Abrir el modal usando el DialogService
@@ -273,7 +315,10 @@ guardarSeguimiento() {
   this.folioService.guardarSeguimiento(dto).subscribe({
     next: (res) => {
       // Actualizar estatus localmente
-      this.folioSeleccionado.estatusActual = this.estatusOptions.find(e => e.value === this.nuevoEstatus.value);
+      this.folioSeleccionado.estatusActual = {
+        id: Number(this.nuevoEstatus.value),
+        nombre: this.nuevoEstatus.label
+      };
 
       // Si el estatus es DIAGNOSTICO COMPLETADO, guardar el resultado independiente
       if (esDiagnostico) {
@@ -439,4 +484,3 @@ generarTicketPDF(cierre: any) {
 
 
 }
-

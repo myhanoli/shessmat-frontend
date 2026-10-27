@@ -171,11 +171,20 @@
       <div class="mt-10 overflow-x-auto w-full h-96 md:h-[600px]"> 
         <p-table #dt 
           [value]="foliosFiltrados"
+          [loading]="cargandoFolios"
           [paginator]="true"
           [rows]="5"
           [rowsPerPageOptions]="[10,20,50]"
           responsiveLayout="scroll"
           styleClass="p-datatable-sm w-full p-datatable-gridlines">
+
+          <ng-template pTemplate="loadingicon">
+            <div class="folios-loading" role="status" aria-live="polite">
+              <span class="folios-loading__spinner" aria-hidden="true"></span>
+              <span class="folios-loading__title">Cargando folios</span>
+              <span class="folios-loading__message">Estamos preparando la información</span>
+            </div>
+          </ng-template>
 
           <ng-template pTemplate="header">
             <tr>
@@ -205,18 +214,8 @@
 <td class="px-4 py-2 text-center">
   <span 
      class="px-2 py-0.5 rounded text-white text-xs"
-    [ngClass]="{
-      'bg-blue-500': folio.estatusActual?.nombre === 'RECIBIDO',
-    'bg-yellow-500': folio.estatusActual?.nombre === 'EN DIAGNOSTICO',
-    'bg-yellow-500': folio?.estatusActual?.nombre === 'DIAGNOSTICO COMPLETADO',
-    'bg-orange-500': folio.estatusActual?.nombre === 'ESPERA AUTORIZACION',
-    'bg-purple-500': folio.estatusActual?.nombre === 'EN REPARACION',
-    'bg-green-500': folio.estatusActual?.nombre === 'LISTO PARA ENTREGA',
-    'bg-emerald-700': folio.estatusActual?.nombre === 'ENTREGADO',
-    'bg-red-600': folio.estatusActual?.nombre === 'CANCELADO',
-    'bg-gray-700': folio.estatusActual?.nombre === 'CERRADO'
-    }">
-    {{ folio.estatusActual?.nombre || 'Sin estatus' }}
+    [ngClass]="claseEstatus(folio.estatusActual)">
+    {{ nombreEstatus(folio.estatusActual) }}
   </span>
 </td>
               <td class="px-4 py-2">
@@ -287,18 +286,8 @@
 
       <span 
         class="px-2 py-1 rounded text-white text-sm"
-        [ngClass]="{
-  'bg-blue-500': folioSeleccionado?.estatusActual?.nombre === 'RECIBIDO',
-    'bg-yellow-500': folioSeleccionado?.estatusActual?.nombre === 'EN DIAGNOSTICO',
-    'bg-yellow-500': folioSeleccionado?.estatusActual?.nombre === 'DIAGNOSTICO COMPLETADO',
-    'bg-orange-500': folioSeleccionado?.estatusActual?.nombre === 'ESPERA AUTORIZACION',
-    'bg-purple-500': folioSeleccionado?.estatusActual?.nombre === 'EN REPARACION',
-    'bg-green-500': folioSeleccionado?.estatusActual?.nombre === 'LISTO PARA ENTREGA',
-    'bg-emerald-700': folioSeleccionado?.estatusActual?.nombre === 'ENTREGADO',
-    'bg-red-600': folioSeleccionado?.estatusActual?.nombre === 'CANCELADO',
-    'bg-gray-700': folioSeleccionado?.estatusActual?.nombre === 'CERRADO'
-  }">
-  {{ folioSeleccionado?.estatusActual?.nombre || 'Sin estatus' }}
+        [ngClass]="claseEstatus(folioSeleccionado.estatusActual)">
+  {{ nombreEstatus(folioSeleccionado.estatusActual) }}
       </span>
 
       <div *ngIf="folioSeleccionado?.resultadoDiagnostico" class="mt-2">
@@ -460,4 +449,3 @@
   </div>
 
 </p-dialog>
-
