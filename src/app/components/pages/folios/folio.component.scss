@@ -31,6 +31,19 @@
   backdrop-filter: blur(2px);
 }
 
+:host ::ng-deep .folios-table .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+  min-width: 2.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: 0.1rem;
+  border: 1px solid #93c5fd !important;
+  border-radius: 50%;
+  background: #dbeafe !important;
+  color: #1e40af !important;
+  font-weight: 600;
+  box-shadow: 0 0 0 2px rgba(147, 197, 253, 0.2);
+}
+
 .folios-loading {
   display: flex;
   flex-direction: column;
