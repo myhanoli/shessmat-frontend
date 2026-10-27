@@ -22,7 +22,7 @@
             </div>
 
             <!-- Form -->
-            <form [formGroup]="loginForm" class="login-form">
+            <form [formGroup]="loginForm" class="login-form" (ngSubmit)="login()">
                 <!-- Email Field -->
                 <div class="form-group">
                     <label for="email1" class="form-label">
@@ -37,6 +37,15 @@
                         placeholder="tu@correo.com" 
                         class="form-input"
                         [class.form-input-error]="email.invalid && (email.dirty || email.touched)">
+                    <div class="email-domain-options" aria-label="Dominios sugeridos">
+                        <span class="email-domain-label">Completar con:</span>
+                        <button type="button" class="email-domain-option" (click)="completarDominio('@hotmail.com')">
+                            &#64;hotmail.com
+                        </button>
+                        <button type="button" class="email-domain-option" (click)="completarDominio('@gmail.com')">
+                            &#64;gmail.com
+                        </button>
+                    </div>
                     <div *ngIf="email.invalid && (email.dirty || email.touched)" class="error-message">
                         <div *ngIf="email.errors?.['required']">
                             <i class="pi pi-times-circle"></i>
@@ -80,8 +89,7 @@
                     pRipple 
                     label="Iniciar Sesión" 
                     class="login-button"
-                    (click)="login()"
-                    type="button">
+                    type="submit">
                 </button>
             </form>
 

@@ -20,6 +20,41 @@ import { LoginRequest } from 'src/app/model/loginRequest';
         :host ::ng-deep .p-password .p-password-input {
             width: 100%;
         }
+
+        .email-domain-options {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.5rem;
+        }
+
+        .email-domain-label {
+            color: #757575;
+            font-size: 0.75rem;
+        }
+
+        .email-domain-option {
+            padding: 0.2rem 0.55rem;
+            border: 1px solid #bfdbfe;
+            border-radius: 9999px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            cursor: pointer;
+            font: inherit;
+            font-size: 0.75rem;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .email-domain-option:hover {
+            border-color: #93c5fd;
+            background: #dbeafe;
+        }
+
+        .email-domain-option:focus-visible {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
+        }
     `]
 })
 export class LoginComponent implements OnInit {
@@ -50,7 +85,24 @@ export class LoginComponent implements OnInit {
         return this.loginForm.controls.password;
     }
 
+    completarDominio(dominio: '@hotmail.com' | '@gmail.com'): void {
+        const correo = this.email.value?.trim() || '';
+        const usuario = correo.split('@')[0];
+
+        if (!usuario) {
+            this.email.markAsTouched();
+            return;
+        }
+
+        this.email.setValue(`${usuario}${dominio}`);
+        this.email.markAsDirty();
+    }
+
     login() {
+        if (this.isLoading) {
+            return;
+        }
+
         this.loginError = "";
 
         if (this.loginForm.valid) {
