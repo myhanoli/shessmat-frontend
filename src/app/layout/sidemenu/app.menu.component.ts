@@ -16,11 +16,11 @@ export class AppMenuComponent implements OnInit {
     ngOnInit() {
         // Construir items de Pages
         const soporteTecnicoItems = [
-            {
+            /*{
                 label: 'Recepcion de equipos',
                 icon: 'pi pi-fw pi-arrow-right',
                 routerLink: ['/layout/pages/recepcion-equipo']
-            },
+            },*/
             {
                 label: 'Servicios',
                 icon: 'pi pi-fw pi-arrow-left',

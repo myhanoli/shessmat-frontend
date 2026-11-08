@@ -11,7 +11,6 @@ import { Observable,of } from 'rxjs';
 import swal from 'sweetalert2';
 import * as internal from 'events';
 import { DomSanitizer } from '@angular/platform-browser';
-import { FileModel } from 'src/app/interface/FileModel';
 import {FormBuilder,FormGroup,FormControl, FormGroupDirective, NgForm, Validators} from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { IngresaEquipoService } from 'src/app/service/ingresa-equipo.service';
@@ -63,7 +62,8 @@ export class RecepcionEquipoComponent implements OnInit {
       tiposEquipos = ['Laptop', 'PC Escritorio', 'Tablet', 'Celular'];  
       marcasLaptop = ['HP', 'Dell', 'Lenovo', 'Acer', 'Asus', 'Toshiba','Apple','Huawei'];
       marcasDesktop = ['Ensamble','HP', 'Dell', 'Compaq','IBM']; 
-      marcasCelulares = ['Samsung', 'Xiaomi', 'Motorola', 'Huawei', 'Apple','Honor','OPPO'];
+      marcasCelulares = ['Samsung', 'Xiaomi', 'Motorola', 'Huawei', 'Apple','Honor','OPPO','ZTE','VIVO'];
+      marcasTablet = ['Samsung', 'Xiaomi', 'Motorola', 'Huawei', 'Apple','Honor'];
 
       hoy: string = '';
 
@@ -97,7 +97,11 @@ accion: 'crear' | 'editar' = 'crear';
       
     
     const fecha = new Date();
-    this.hoy = fecha.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    this.hoy = [
+      fecha.getFullYear(),
+      String(fecha.getMonth() + 1).padStart(2, '0'),
+      String(fecha.getDate()).padStart(2, '0')
+    ].join('-');
 
   
       this.formFolio = this.fb.group({
@@ -255,11 +259,12 @@ this.folioRequest.clienteId = this.formFolio.get('numCliente')?.value;
 
   this.folioService.creaFolio(this.folioRequest).subscribe({
   next: (response) => {
+    const folioCreado = response?.folio || this.folioRequest.folio;
     this.dialogRef.close(true);
     // Primer Swal de confirmación antes de preguntar por imágenes
     Swal.fire({
       title: 'Folio creado',
-      text: `El folio ${response.folio} se creó correctamente. ¿Desea continuar?`,
+      text: `El folio ${folioCreado} se creó correctamente. ¿Desea continuar?`,
       icon: 'info',
       showCancelButton: true,
       confirmButtonText: 'Aceptar',
@@ -268,7 +273,7 @@ this.folioRequest.clienteId = this.formFolio.get('numCliente')?.value;
         
       if (result.isConfirmed) {
         // Preguntar si desea cargar imágenes
-        this.preguntarCargarImagenes(response.folio);
+        this.preguntarCargarImagenes(folioCreado);
       } else {
         this.formFolio.reset();
         this.ngOnInit();
@@ -376,15 +381,6 @@ private mostrarSelectorImagenes(folio: string): void {
         }
       });
     }
-  });
-}
-    // Convierte File → Base64
-private convertirABase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = err => reject(err);
-    reader.readAsDataURL(file);
   });
 }
 

@@ -1,13 +1,12 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders,HttpRequest, HttpEvent} from '@angular/common/http';
-import {forkJoin, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Folio } from '../interface/Folio';
 import { TipoEquipo } from '../interface/TipoEquipo';
 import { FolioModel } from '../interface/FolioModel';
-import { FileModel } from '../interface/FileModel';
 import { FolioAprobadosModel } from '../interface/FoliosAprobadosModel';
 import { FolioRequest } from '../interface/FolioRequest';
 import { AuthService } from './auth-service.service';
@@ -71,12 +70,6 @@ private httpHeaders = new HttpHeaders({
     return this.http.post('api/exportPdf',elementPDF,{responseType:'blob'});
   }
 
-  //Metodo que envia los archivos al endpoint /upload 
-  upload(file: FileModel): Observable<any>{
-    //console.log("JsonFile: " + file.base64)
-    return this.http.post<FolioModel>('api/upload',file,{headers:this.httpHeaders})
-  }
-
   //Metodo para Obtener los archivos
   getFiles(){
     return this.http.get('api/files');
@@ -112,10 +105,14 @@ private httpHeaders = new HttpHeaders({
     }
 
 
-    subirMultiplesImagenes(formData: FormData): Observable<any> {
-      console.log('Folio:', formData.get('folio'));
-  return this.http.post('${environment.urlHost}api/upload',formData);
- // return this.http.post('${environment.urlHost}api/upload',formData);
+   /* subirMultiplesImagenes(formData: FormData): Observable<any> {
+      return this.http.post(`${environment.urlHost}api/upload`, formData);
+}*/
+subirMultiplesImagenes(formData: FormData): Observable<any> {
+  return this.http.post<any>(
+    `${environment.urlHost}api/upload`,
+    formData
+  );
 }
 
 

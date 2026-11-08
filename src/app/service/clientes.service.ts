@@ -28,7 +28,20 @@ export class ClientesService {
 
   getClientes(): Observable<Cliente2[]> {
     return this.http.get(environment.urlHost+'api/lista').pipe(
-      map(response => response as Cliente2[])
+      map(response => (response as Cliente2[]).slice().sort((a, b) => {
+        const fechaA = a.fechaAlta instanceof Date
+          ? a.fechaAlta.getTime()
+          : new Date(a.fechaAlta).getTime();
+        const fechaB = b.fechaAlta instanceof Date
+          ? b.fechaAlta.getTime()
+          : new Date(b.fechaAlta).getTime();
+
+        if (Number.isFinite(fechaA) && Number.isFinite(fechaB) && fechaA !== fechaB) {
+          return fechaB - fechaA;
+        }
+
+        return b.id - a.id;
+      }))
     );
   }
 
