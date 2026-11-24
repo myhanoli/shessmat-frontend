@@ -1,7 +1,8 @@
 
 export enum Role {
     ADMIN = "ADMIN",
-	USER = "USER"
+	USER = "USER",
+	CLIENTE = "CLIENTE"
 	
 }
 
@@ -26,6 +27,8 @@ export interface Cliente {
     username?: string;
     password?: string;
     rol?: Role;
+    role?: Role;
+    id_cliente?: number;
     
     
 }

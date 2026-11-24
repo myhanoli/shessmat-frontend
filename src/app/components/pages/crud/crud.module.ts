@@ -17,6 +17,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
+import { DynamicDialogModule, DialogService } from 'primeng/dynamicdialog';
 
 @NgModule({
     imports: [
@@ -36,8 +37,10 @@ import { TooltipModule } from 'primeng/tooltip';
         RadioButtonModule,
         InputNumberModule,
         DialogModule,
-        TooltipModule
+        TooltipModule,
+        DynamicDialogModule
     ],
-    declarations: [CrudComponent]
+    declarations: [CrudComponent],
+    providers: [DialogService]
 })
 export class CrudModule { }

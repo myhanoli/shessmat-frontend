@@ -3,6 +3,7 @@ import { FormBuilder, Validators, ReactiveFormsModule, FormGroup, FormControl } 
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LoginService } from 'src/app/service/login.service';
+import { RoleService } from 'src/app/service/role.service';
 import { LoginRequest } from 'src/app/model/loginRequest';
 
 @Component({
@@ -69,7 +70,8 @@ export class LoginComponent implements OnInit {
     constructor(
         private formBuilder: FormBuilder,
         private router: Router,
-        private loginService: LoginService
+        private loginService: LoginService,
+        private roleService: RoleService
     ) { }
 
     ngOnInit(): void {
@@ -120,7 +122,10 @@ export class LoginComponent implements OnInit {
                 complete: () => {
                     console.info("Login completado");
                     this.isLoading = false;
-                    this.router.navigateByUrl('/layout');
+                    const destination = this.roleService.hasRole('cliente')
+                        ? '/portal-cliente'
+                        : '/layout';
+                    this.router.navigateByUrl(destination);
                     this.loginForm.reset();
                 }
             });

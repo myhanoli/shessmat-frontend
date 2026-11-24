@@ -12,6 +12,9 @@ import { AuthGuard } from './components/auth/guards/auth-guard';
             { path: '', redirectTo: 'auth/login', pathMatch: 'full'},
             {
                 path: 'layout', component: AppLayoutComponent,
+                canActivate: [AuthGuard],
+                canActivateChild: [AuthGuard],
+                data: { forbiddenRoles: ['cliente'] },
                 children: [
                     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
                     { path: 'login', loadChildren: () => import('./components/auth/login/login.module').then(m => m.LoginModule) },
@@ -26,6 +29,12 @@ import { AuthGuard } from './components/auth/guards/auth-guard';
                     { path: 'operacion-emisores', loadChildren: () => import('./components/operacion-emisores/operacion-emisores.module').then(m => m.OperacionEmisoresModule), canActivate: [AuthGuard]},
                     { path: 'reportes-reparaciones', loadChildren: () => import('./components/reportes-reparaciones/reportes-reparaciones.module').then(m => m.ReportesReparacionesModule), canActivate: [AuthGuard], data: { expectedRole: ['admin'] }},
                 ]
+            },
+            {
+                path: 'portal-cliente',
+                loadComponent: () => import('./components/portal-cliente/portal-cliente.component').then(m => m.PortalClienteComponent),
+                canActivate: [AuthGuard],
+                data: { expectedRole: ['cliente'] }
             },
             //{ path: 'layout', loadChildren: () => import('./layout/app.layout.module').then(m => m.AppLayoutModule) },
             { path: 'auth', loadChildren: () => import('./components/auth/auth.module').then(m => m.AuthModule) },

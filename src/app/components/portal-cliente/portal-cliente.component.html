@@ -1,0 +1,114 @@
+<main class="portal">
+  <header class="portal-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">S</span>
+      <span>Shessmat</span>
+    </div>
+    <div class="header-actions">
+      <span class="portal-badge">Portal cliente</span>
+      <button type="button" class="logout-button" (click)="cerrarSesion()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <section class="portal-content" aria-labelledby="page-title">
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">Hola, {{ nombreCliente }}</p>
+        <h1 id="page-title">Mis reparaciones</h1>
+        <p class="subtitle">Consulta el estado de tus equipos y folios.</p>
+      </div>
+      <button type="button" class="refresh-button" (click)="cargarFolios()" [disabled]="cargando">
+        <i class="pi pi-refresh" aria-hidden="true"></i>
+        Actualizar
+      </button>
+    </div>
+
+    <div *ngIf="cargando" class="feedback" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Cargando tus folios...</span>
+    </div>
+
+    <div *ngIf="!cargando && error" class="feedback feedback--error" role="alert">
+      <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+      <span>{{ error }}</span>
+      <button type="button" class="text-button" (click)="cargarFolios()">Reintentar</button>
+    </div>
+
+    <div *ngIf="!cargando && !error && folios.length === 0" class="empty-state">
+      <span class="empty-icon"><i class="pi pi-inbox" aria-hidden="true"></i></span>
+      <h2>Aún no tienes reparaciones</h2>
+      <p>Cuando registremos un equipo, podrás consultar aquí el avance de su folio.</p>
+    </div>
+
+    <section *ngIf="!cargando && !error && folios.length > 0" class="folio-list" aria-label="Mis folios">
+      <article class="folio-card" *ngFor="let folio of folios">
+        <div class="folio-card-heading">
+          <div>
+            <p class="folio-caption">Folio</p>
+            <h2>{{ folio.folio }}</h2>
+          </div>
+          <span class="status-badge" [ngClass]="claseEstatus(folio)">
+            {{ nombreEstatus(folio) }}
+          </span>
+        </div>
+
+        <div class="equipment">
+          <span class="equipment-icon"><i class="pi pi-desktop" aria-hidden="true"></i></span>
+          <div>
+            <h3>{{ folio.modelo || folio.tipoEquipo }}</h3>
+            <p>{{ folio.tipoEquipo }}</p>
+          </div>
+        </div>
+
+        <p class="folio-date" *ngIf="folio.fecha">
+          <i class="pi pi-calendar" aria-hidden="true"></i>
+          Recibido el {{ folio.fecha | date:'d \'de\' MMMM, y':'':'es-MX' }}
+        </p>
+
+        <div class="progress-track" role="progressbar"
+             [attr.aria-valuenow]="progreso(folio)" aria-valuemin="0" aria-valuemax="100"
+             [attr.aria-label]="'Avance: ' + nombreEstatus(folio)">
+          <span class="progress-value" [class.progress-value--ready]="estaListo(folio)"
+                [style.width.%]="progreso(folio)"></span>
+        </div>
+        <p class="progress-percent">{{ progreso(folio) }}% de avance</p>
+        <div class="progress-labels" aria-hidden="true">
+          <span [class.is-active]="etapaActual(folio) >= 0">Recibido</span>
+          <span [class.is-active]="etapaActual(folio) >= 1">Diagnóstico</span>
+          <span [class.is-active]="etapaActual(folio) >= 2">En reparación</span>
+          <span [class.is-active]="etapaActual(folio) >= 3">Listo</span>
+        </div>
+
+        <div class="folio-details" *ngIf="expandedFolioId === folio.folioId">
+          <!--<div *ngIf="cotizacion(folio) !== null">
+            <span class="detail-label">Cotización</span>
+            <strong>{{ cotizacion(folio) | currency:'MXN':'symbol':'1.2-2':'es-MX' }}</strong>
+          </div>
+          <p *ngIf="cotizacion(folio) !== null" class="quote-status"
+             [class.quote-status--approved]="folio.cotizacionAprobada">
+            <i [class]="folio.cotizacionAprobada ? 'pi pi-check-circle' : 'pi pi-clock'" aria-hidden="true"></i>
+            {{ folio.cotizacionAprobada ? 'Cotización aprobada' : 'Cotización pendiente de aprobación' }}
+          </p>-->
+          <div *ngIf="folio.comentarios">
+            <span class="detail-label">Descripción</span>
+            <span>{{ folio.comentarios }}</span>
+          </div>
+          <div *ngIf="folio.ultimoComentario">
+            <span class="detail-label">Última actualización</span>
+            <span>{{ folio.ultimoComentario }}</span>
+          </div>
+          <p *ngIf="cotizacion(folio) === null && !folio.comentarios && !folio.ultimoComentario" class="no-details">
+            No hay información adicional para este folio.
+          </p>
+        </div>
+
+        <button type="button" class="detail-button" (click)="toggleDetalle(folio)"
+                [attr.aria-expanded]="expandedFolioId === folio.folioId">
+          {{ expandedFolioId === folio.folioId ? 'Ocultar detalle' : 'Ver detalle del folio' }}
+        </button>
+      </article>
+    </section>
+  </section>
+
+  <footer class="portal-footer">Shessmat · Seguimiento de reparaciones</footer>
+</main>

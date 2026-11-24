@@ -27,16 +27,13 @@ return structuredClone(this.user);
 
   public isAuthenticated(): boolean {
     const token = localStorage.getItem("token");
-    console.log("token: "+token)
     return !jwtHelper.isTokenExpired(token);
   }
 
   login(credentials:LoginRequest):Observable<any>{
-    console.log("credentials2: " + credentials.username )
     return this.http.post<any>(environment.urlHost+"auth/login",credentials).pipe(
       
       tap( (userData) => {
-        console.log(userData)
         localStorage.setItem("token", userData.token);
         // Almacenar el objeto user como JSON
         localStorage.setItem("user", JSON.stringify(userData.user));

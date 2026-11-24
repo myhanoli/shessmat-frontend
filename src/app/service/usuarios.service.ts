@@ -1,11 +1,9 @@
-import { HttpClient,HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable,of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
 import { Cliente } from '../model/cliente';
-import { Product, Role } from '../model/product';
-import { Folio } from '../interface/Folio';
 
 
 @Injectable({
@@ -13,14 +11,9 @@ import { Folio } from '../interface/Folio';
 })
 export class UsuariosService {
  
-  rol: Role = Role.ADMIN;
-  
   private httpHeaders = new HttpHeaders({
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Access-Control-Allow-Origin': 'http://localhost:8080/'
-   // 'Access-Control-Allow-Origin': 'https://shessmat-backend-production.up.railway.app/'
-    })
+    'Content-Type': 'application/json'
+  });
 
   constructor(private http: HttpClient) { }
 
@@ -32,10 +25,11 @@ export class UsuariosService {
   }
 
   saveUser(cliente:Cliente):Observable<Cliente>{
-    console.log('object cliente: ' + cliente.nombre)
-    console.log('pasword: ' + cliente.password)
-    console.log('Rol: ' + cliente.rol)
-    return this.http.post<Cliente>(environment.urlHost+'api/saveUser',cliente,{headers:this.httpHeaders})
+    return this.http.post<Cliente>(
+      environment.urlHost + 'api/saveUser',
+      cliente,
+      { headers: this.httpHeaders }
+    );
   }
 
   deleteUser(id:string):Observable<Cliente>{
@@ -44,7 +38,6 @@ export class UsuariosService {
 
   
   updateUser(cliente:Cliente):Observable<Cliente>{
-    console.log('Rol1: ' + this.rol)
     return this.http.put<Cliente>(environment.urlHost+'api/updateUser/'+cliente.id,cliente,{headers:this.httpHeaders})
   }
 

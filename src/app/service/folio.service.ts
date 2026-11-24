@@ -5,6 +5,7 @@ import {Observable} from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Folio } from '../interface/Folio';
+import { FolioCliente } from '../interface/FolioCliente';
 import { TipoEquipo } from '../interface/TipoEquipo';
 import { FolioModel } from '../interface/FolioModel';
 import { FolioAprobadosModel } from '../interface/FoliosAprobadosModel';
@@ -36,6 +37,16 @@ private httpHeaders = new HttpHeaders({
     return this.http.get(environment.urlHost+'api/listaFolios').pipe(
       map(response => response as Folio[])
     );
+  }
+
+  getMisFolios(): Observable<FolioCliente[]> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No hay una sesión activa para consultar los folios del cliente.');
+    }
+
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    return this.http.get<FolioCliente[]>(`${environment.urlHost}api/folios/mis-folios`, { headers });
   }
 
   getTicket(folioId: number): Observable<Blob> {

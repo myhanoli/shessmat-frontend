@@ -1,16 +1,13 @@
-import { Injectable, inject } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
-import { AuthService } from 'src/app/service/auth-service.service';
+import { Injectable } from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, Router } from '@angular/router';
 import { LoginService } from 'src/app/service/login.service';
 import { RoleService } from 'src/app/service/role.service';
-import { environment } from 'src/environments/environment';
-import { jwtDecode } from 'jwt-decode';
 
 
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard implements CanActivate {
+export class AuthGuard implements CanActivate, CanActivateChild {
   constructor(
     private auth: LoginService,
     private router: Router,
@@ -18,17 +15,19 @@ export class AuthGuard implements CanActivate {
   ) { }
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
-    let isActive: boolean = false;
     if (!this.auth.isAuthenticated()) {
       this.router.navigate(['/auth/login']);
-      return isActive;
-    } else {
-      isActive = true;
+      return false;
     }
 
-    // Verificar roles si se especifican en route.data.expectedRole
-    const expectedRoles: string[] = route.data['expectedRole'];
-    if (expectedRoles && expectedRoles.length > 0) {
+    const routeData = route.pathFromRoot.reduce(
+      (data, snapshot) => ({ ...data, ...snapshot.data }),
+      {} as Record<string, unknown>
+    );
+
+    // Verificar roles requeridos o prohibidos en la ruta y sus padres.
+    const expectedRoles = routeData['expectedRole'] as string[] | undefined;
+    if (expectedRoles?.length) {
       const hasValidRole = this.roleService.hasAnyRole(expectedRoles);
       if (!hasValidRole) {
         this.router.navigate(['/auth/access']);
@@ -36,7 +35,17 @@ export class AuthGuard implements CanActivate {
       }
     }
 
-    return isActive;
+    const forbiddenRoles = routeData['forbiddenRoles'] as string[] | undefined;
+    if (forbiddenRoles?.some(role => this.roleService.hasRole(role))) {
+      this.router.navigate(['/auth/access']);
+      return false;
+    }
+
+    return true;
+  }
+
+  canActivateChild(route: ActivatedRouteSnapshot): boolean {
+    return this.canActivate(route);
   }
 
   /**

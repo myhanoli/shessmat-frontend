@@ -7,8 +7,12 @@ import swal from 'sweetalert2';
 import { ClientesService } from 'src/app/service/clientes.service';
 import { ProductService } from 'src/app/service/product.service';
 import { Product } from 'src/app/model/product';
-import { Cliente } from 'src/app/model/cliente';
+import { Cliente, Role } from 'src/app/model/cliente';
 import { UsuariosService } from 'src/app/service/usuarios.service';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { ClienteComponent } from '../clientes/cliente.component';
+import { Cliente2 } from 'src/app/interface/cliente2';
+import { HttpErrorResponse } from '@angular/common/http';
 
 
 @Component({
@@ -20,6 +24,7 @@ export class CrudComponent implements OnInit {
     btnGuardar:boolean;
 
     clientDialog: boolean = false;
+    clienteRef: DynamicDialogRef | undefined;
 
     //updateClient: boolean = false;
 
@@ -33,7 +38,7 @@ export class CrudComponent implements OnInit {
 
     //product: Product = {};
 
-    selectedProducts: Product[] = [];
+    selectedProducts: Cliente[] = [];
 
     submitted: boolean = false;
 
@@ -42,6 +47,12 @@ export class CrudComponent implements OnInit {
     statuses: any[] = [];
 
     clientes: Cliente[] = [];
+
+    roles = [
+        { label: 'Administrador', value: Role.ADMIN },
+        { label: 'Usuario', value: Role.USER },
+        { label: 'Cliente', value: Role.CLIENTE }
+    ];
     
     //cliente:Cliente = new Cliente() 
 
@@ -49,7 +60,12 @@ export class CrudComponent implements OnInit {
 
     rowsPerPageOptions = [5, 10, 20];
 
-    constructor(private productService: ProductService, private messageService: MessageService,private _usuariosService:UsuariosService) { }
+    constructor(
+        private productService: ProductService,
+        private messageService: MessageService,
+        private _usuariosService: UsuariosService,
+        private dialogService: DialogService
+    ) { }
 
     ngOnInit() {
         this.btnGuardar = false;
@@ -87,9 +103,45 @@ export class CrudComponent implements OnInit {
 
     editClient(cliente: Cliente) {
         this.btnGuardar = true;
-        this.cliente = { ...cliente };
+        this.cliente = { ...cliente, rol: cliente.rol ?? cliente.role };
+        this.submitted = false;
         this.clientDialog = true;
        // this.updateClient = true;
+    }
+
+    onRoleChange(role: Role): void {
+        if (role !== Role.CLIENTE) {
+            this.cliente.id_cliente = undefined;
+            return;
+        }
+
+        this.abrirSelectorCliente();
+    }
+
+    abrirSelectorCliente(): void {
+        this.cliente.id_cliente = undefined;
+        this.clienteRef = this.dialogService.open(ClienteComponent, {
+            header: 'Seleccionar Cliente',
+            width: '95vw',
+            style: { maxWidth: '800px' },
+            contentStyle: { overflow: 'auto' },
+            closable: true,
+            dismissableMask: true
+        });
+
+        this.clienteRef.onClose.subscribe((clienteSeleccionado: Cliente2 | undefined) => {
+            if (clienteSeleccionado?.id !== undefined && clienteSeleccionado.id !== null) {
+                this.cliente = {
+                    ...this.cliente,
+                    id_cliente: Number(clienteSeleccionado.id),
+                    nombre: clienteSeleccionado.nombre,
+                    apellidoPat: clienteSeleccionado.apellidoPat,
+                    apellidoMat: clienteSeleccionado.apellidoMat,
+                    telefono: clienteSeleccionado.telefono,
+                    username: clienteSeleccionado.correo
+                };
+            }
+        });
     }
 
     deleteProduct(product: Product) {
@@ -130,8 +182,13 @@ export class CrudComponent implements OnInit {
           }
       
           actualizaCliente():void{
+            this.submitted = true;
+            if (!this.usuarioValido()) {
+                return;
+            }
+
             console.log('actualizaCliente con Id: ' + this.cliente.id)
-            this._usuariosService.updateUser(this.cliente).subscribe(
+            this._usuariosService.updateUser(this.usuarioParaGuardar()).subscribe(
               
               response => 
               {
@@ -154,8 +211,12 @@ export class CrudComponent implements OnInit {
 
 
            public creaCliente():void{
+            this.submitted = true;
+            if (!this.usuarioValido()) {
+                return;
+            }
 
-            this._usuariosService.saveUser(this.cliente).subscribe(
+            this._usuariosService.saveUser(this.usuarioParaGuardar()).subscribe(
               response => 
                 {
               
@@ -165,11 +226,35 @@ export class CrudComponent implements OnInit {
                   this._usuariosService.getUsers().subscribe(
                       clientes => this.clientes = clientes
                       );
-                 
-              
-                }
+                },
+              error => this.manejarErrorAltaUsuario(error)
             )
         
+          }
+
+          private usuarioParaGuardar(): Cliente {
+            const { role, ...usuario } = this.cliente;
+            const usuarioRequest = { ...usuario, rol: this.cliente.rol ?? role };
+            if (usuarioRequest.rol !== Role.CLIENTE) {
+                delete usuarioRequest.id_cliente;
+            }
+            return usuarioRequest;
+          }
+
+          private usuarioValido(): boolean {
+            return !!this.cliente.rol &&
+                (this.cliente.rol !== Role.CLIENTE || Number.isSafeInteger(this.cliente.id_cliente));
+          }
+
+          private manejarErrorAltaUsuario(error: HttpErrorResponse): void {
+            let mensaje = 'No fue posible registrar el usuario. Intenta de nuevo.';
+            if (error.status === 401) {
+                mensaje = 'El backend rechazó la petición por falta de autorización.';
+            } else if (error.status === 403) {
+                mensaje = 'El backend no permite registrar usuarios con los permisos actuales.';
+            }
+
+            swal.fire('No se pudo registrar el usuario', mensaje, 'error');
           }
         
 
