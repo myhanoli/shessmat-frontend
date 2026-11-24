@@ -3,6 +3,7 @@ export interface FolioCliente {
   folioId: number;
   folio: string;
   tipoEquipo: string;
+  marca?: string;
   modelo: string;
   comentarios: string;
   fecha: string;

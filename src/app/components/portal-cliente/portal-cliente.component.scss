@@ -224,6 +224,16 @@ h1 {
   font-size: 17px;
 }
 
+.equipment-icon svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
 .equipment h3 {
   margin-bottom: 3px;
   font-size: 15px;
@@ -289,6 +299,99 @@ h1 {
   padding: 16px 0;
   border-top: 1px solid #edf0f4;
   font-size: 13px;
+}
+
+.tracking-section {
+  display: grid;
+  gap: 12px;
+}
+
+.tracking-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.current-status {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+}
+
+.tracking-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 2px 0 2px 8px;
+  list-style: none;
+}
+
+.tracking-event {
+  position: relative;
+  display: grid;
+  grid-template-columns: 12px 1fr;
+  gap: 10px;
+  min-height: 60px;
+}
+
+.tracking-event:not(:last-child)::before {
+  position: absolute;
+  top: 10px;
+  bottom: -2px;
+  left: 4px;
+  width: 1px;
+  background: #d9e0e9;
+  content: '';
+}
+
+.tracking-marker {
+  z-index: 1;
+  width: 9px;
+  height: 9px;
+  margin-top: 3px;
+  border: 2px solid #3484f5;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.tracking-event-content {
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  padding-bottom: 14px;
+}
+
+.tracking-status {
+  color: #334155;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.tracking-comment {
+  margin: 0;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.tracking-user,
+.tracking-date {
+  margin: 0;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.tracking-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.tracking-message--error {
+  color: #b42318;
 }
 
 .quote-status {

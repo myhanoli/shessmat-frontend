@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { FolioCliente } from 'src/app/interface/FolioCliente';
+import { HistorialEstatus } from 'src/app/model/historialEstatus';
 import { FolioService } from 'src/app/service/folio.service';
 import { LoginService } from 'src/app/service/login.service';
 
@@ -27,6 +28,10 @@ export class PortalClienteComponent implements OnInit {
   cargando = true;
   error = '';
   expandedFolioId: number | null = null;
+  historialPorFolio: Record<number, HistorialEstatus[]> = {};
+  cargandoHistorial = new Set<number>();
+  errorHistorial = new Set<number>();
+  historialSolicitado = new Set<number>();
   readonly nombreCliente = this.obtenerNombreCliente();
 
   constructor(
@@ -45,7 +50,13 @@ export class PortalClienteComponent implements OnInit {
     this.folioService.getMisFolios()
       .pipe(finalize(() => this.cargando = false))
       .subscribe({
-        next: folios => this.folios = folios,
+        next: folios => {
+          this.folios = folios;
+          this.historialPorFolio = {};
+          this.historialSolicitado.clear();
+          this.errorHistorial.clear();
+          this.cargandoHistorial.clear();
+        },
         error: err => {
           console.error('Error al cargar los folios del cliente:', err);
           this.error = 'No fue posible cargar tus folios. Intenta de nuevo más tarde.';
@@ -59,11 +70,45 @@ export class PortalClienteComponent implements OnInit {
   }
 
   toggleDetalle(folio: FolioCliente): void {
-    this.expandedFolioId = this.expandedFolioId === folio.folioId ? null : folio.folioId;
+    if (this.expandedFolioId === folio.folioId) {
+      this.expandedFolioId = null;
+      return;
+    }
+
+    this.expandedFolioId = folio.folioId;
+    this.cargarHistorial(folio.folioId);
+  }
+
+  cargarHistorial(folioId: number): void {
+    if (this.historialSolicitado.has(folioId) || this.cargandoHistorial.has(folioId)) {
+      return;
+    }
+
+    this.cargandoHistorial.add(folioId);
+    this.errorHistorial.delete(folioId);
+    this.folioService.getHistorial(folioId)
+      .pipe(finalize(() => this.cargandoHistorial.delete(folioId)))
+      .subscribe({
+        next: historial => {
+          this.historialPorFolio[folioId] = [...historial].sort(
+            (a, b) => new Date(a.fechaCambio).getTime() - new Date(b.fechaCambio).getTime()
+          );
+          this.historialSolicitado.add(folioId);
+        },
+        error: err => {
+          console.error(`Error al cargar el seguimiento del folio ${folioId}:`, err);
+          this.errorHistorial.add(folioId);
+        }
+      });
   }
 
   nombreEstatus(folio: FolioCliente): string {
     return folio.estatus || 'Sin estatus';
+  }
+
+  iconoEquipo(folio: FolioCliente): string {
+    const tipoEquipo = this.normalizar(folio.tipoEquipo || '');
+    return tipoEquipo.includes('celular') ? 'pi-mobile' : 'laptop';
   }
 
   claseEstatus(folio: FolioCliente): string {
@@ -82,24 +127,63 @@ export class PortalClienteComponent implements OnInit {
 
   etapaActual(folio: FolioCliente): number {
     const estatus = this.normalizar(this.nombreEstatus(folio));
-    if (estatus.includes('listo') || estatus.includes('entregado') || estatus.includes('finalizado')) {
+    const estatusPorId: Record<number, number> = {
+      1: 0,
+      2: 1,
+      3: 1,
+      4: 2,
+      5: 3,
+      6: 3,
+      7: 3,
+      8: 3
+    };
+    const id = Number(folio.estatusId);
+    if (Number.isInteger(id) && estatusPorId[id] !== undefined) {
+      return estatusPorId[id];
+    }
+
+    if (
+      estatus.includes('listo') ||
+      estatus.includes('entregado') ||
+      estatus.includes('finalizado') ||
+      estatus.includes('cerrado') ||
+      estatus.includes('cancelado')
+    ) {
       return 3;
     }
     if (estatus.includes('repar')) {
       return 2;
     }
-    if (estatus.includes('diagn')) {
+    if (estatus.includes('diagn') || estatus.includes('autorizacion')) {
       return 1;
     }
     return 0;
   }
 
   progreso(folio: FolioCliente): number {
-    return Math.max(0, Math.min(100, Number(folio.progreso) || 0));
+    if (!folio.estatus) {
+      return 0;
+    }
+
+    return (this.etapaActual(folio) + 1) * 25;
   }
 
   estaListo(folio: FolioCliente): boolean {
-    return this.etapaActual(folio) === 3;
+    const estatus = this.normalizar(this.nombreEstatus(folio));
+    return estatus.includes('listo') ||
+      estatus.includes('entregado') ||
+      estatus.includes('finalizado');
+  }
+
+  etiquetaEtapaFinal(folio: FolioCliente): string {
+    const estatus = this.normalizar(this.nombreEstatus(folio));
+    if (estatus.includes('cerrado')) {
+      return 'Cerrado';
+    }
+    if (estatus.includes('cancelado')) {
+      return 'Cancelado';
+    }
+    return 'Listo';
   }
 
   cotizacion(folio: FolioCliente): number | null {

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders,HttpRequest, HttpEvent} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {Observable, throwError} from 'rxjs';
 
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -135,7 +135,13 @@ guardarSeguimiento(dto: { folioId: number; estatusId: number; comentario: string
 
 
  getHistorial(folioId: number): Observable<HistorialEstatus[]> {
-		    return this.http.get<HistorialEstatus[]>(`${environment.urlHost}api/${folioId}/historial`);
+      const token = localStorage.getItem('token')?.trim().replace(/^Bearer\s+/i, '');
+      if (!token) {
+        return throwError(() => new Error('No hay una sesión activa para consultar el seguimiento del folio.'));
+      }
+
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+		  return this.http.get<HistorialEstatus[]>(`${environment.urlHost}api/${folioId}/historial`, { headers });
 		  }
 
 

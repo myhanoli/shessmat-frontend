@@ -2,7 +2,7 @@
   <header class="portal-header">
     <div class="brand">
       <span class="brand-mark" aria-hidden="true">S</span>
-      <span>Shessmat</span>
+      <span>Shessmat<p class="eyebrow">by hanolipc</p></span>
     </div>
     <div class="header-actions">
       <span class="portal-badge">Portal cliente</span>
@@ -53,9 +53,18 @@
         </div>
 
         <div class="equipment">
-          <span class="equipment-icon"><i class="pi pi-desktop" aria-hidden="true"></i></span>
+          <span class="equipment-icon">
+            <i *ngIf="iconoEquipo(folio) === 'pi-mobile'; else laptopIcon"
+               class="pi pi-mobile" aria-hidden="true"></i>
+            <ng-template #laptopIcon>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="5" y="4" width="14" height="12" rx="1.5"></rect>
+                <path d="M3 19h18l-1.5-3H4.5L3 19Z"></path>
+              </svg>
+            </ng-template>
+          </span>
           <div>
-            <h3>{{ folio.modelo || folio.tipoEquipo }}</h3>
+            <h3>{{ folio.marca }} {{ folio.modelo || folio.tipoEquipo }}</h3>
             <p>{{ folio.tipoEquipo }}</p>
           </div>
         </div>
@@ -76,10 +85,53 @@
           <span [class.is-active]="etapaActual(folio) >= 0">Recibido</span>
           <span [class.is-active]="etapaActual(folio) >= 1">Diagnóstico</span>
           <span [class.is-active]="etapaActual(folio) >= 2">En reparación</span>
-          <span [class.is-active]="etapaActual(folio) >= 3">Listo</span>
+          <span [class.is-active]="etapaActual(folio) >= 3">{{ etiquetaEtapaFinal(folio) }}</span>
         </div>
 
         <div class="folio-details" *ngIf="expandedFolioId === folio.folioId">
+          <div *ngIf="folio.comentarios">
+            <span class="detail-label">Descripción de falla por cliente</span>
+            <span>{{ folio.comentarios }}</span>
+          </div>
+          <section class="tracking-section" aria-label="Seguimiento del folio">
+            
+            <div class="current-status">
+              <span class="detail-label">Estatus actual</span>
+              <span class="status-badge" [ngClass]="claseEstatus(folio)">{{ nombreEstatus(folio) }}</span>
+            </div>
+
+            <div *ngIf="cargandoHistorial.has(folio.folioId)" class="tracking-message" role="status">
+              <span class="spinner" aria-hidden="true"></span>
+              Cargando seguimiento...
+            </div>
+
+            <div *ngIf="errorHistorial.has(folio.folioId)" class="tracking-message tracking-message--error" role="alert">
+              <span>No fue posible cargar el seguimiento.</span>
+              <button type="button" class="text-button" (click)="cargarHistorial(folio.folioId)">Reintentar</button>
+            </div>
+
+            <ol *ngIf="historialSolicitado.has(folio.folioId) && historialPorFolio[folio.folioId]?.length"
+                class="tracking-list">
+              <li *ngFor="let evento of historialPorFolio[folio.folioId]" class="tracking-event">
+                <span class="tracking-marker" aria-hidden="true"></span>
+                <div class="tracking-event-content">
+                  <span class="tracking-status" *ngIf="evento.estatusNuevo?.nombre">
+                    {{ evento.estatusNuevo?.nombre }}
+                  </span>
+                  <p class="tracking-comment" *ngIf="evento.comentario">{{ evento.comentario }}</p>
+                  <p class="tracking-user" *ngIf="evento.usuario?.nombre">Registrado por {{ evento.usuario?.nombre }}</p>
+                  <time class="tracking-date" [attr.datetime]="evento.fechaCambio">
+                    {{ evento.fechaCambio | date:'dd/MM/yyyy HH:mm':'':'es-MX' }}
+                  </time>
+                </div>
+              </li>
+            </ol>
+            <p *ngIf="historialSolicitado.has(folio.folioId) && !historialPorFolio[folio.folioId]?.length"
+               class="no-details">
+              Aún no hay actualizaciones de seguimiento para este folio.
+            </p>
+          </section>
+
           <!--<div *ngIf="cotizacion(folio) !== null">
             <span class="detail-label">Cotización</span>
             <strong>{{ cotizacion(folio) | currency:'MXN':'symbol':'1.2-2':'es-MX' }}</strong>
@@ -89,17 +141,7 @@
             <i [class]="folio.cotizacionAprobada ? 'pi pi-check-circle' : 'pi pi-clock'" aria-hidden="true"></i>
             {{ folio.cotizacionAprobada ? 'Cotización aprobada' : 'Cotización pendiente de aprobación' }}
           </p>-->
-          <div *ngIf="folio.comentarios">
-            <span class="detail-label">Descripción</span>
-            <span>{{ folio.comentarios }}</span>
-          </div>
-          <div *ngIf="folio.ultimoComentario">
-            <span class="detail-label">Última actualización</span>
-            <span>{{ folio.ultimoComentario }}</span>
-          </div>
-          <p *ngIf="cotizacion(folio) === null && !folio.comentarios && !folio.ultimoComentario" class="no-details">
-            No hay información adicional para este folio.
-          </p>
+          
         </div>
 
         <button type="button" class="detail-button" (click)="toggleDetalle(folio)"
