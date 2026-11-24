@@ -37,6 +37,7 @@ export class ClienteComponent implements OnInit {
     clientesFiltrados: any[] = [];
     
     filtros = {
+      numCliente: '',
       nombre: '',
       apellidoPat: '',
       telefono: '',
@@ -263,17 +264,18 @@ reloadClientes() {
 
 aplicarFiltros() {
   this.clientesFiltrados = this.clientes.filter(cliente => {
-    return (!this.filtros.nombre || cliente.nombre.toLowerCase().includes(this.filtros.nombre.toLowerCase()))
-      && (!this.filtros.apellidoPat || cliente.apellidoPat.toLowerCase().includes(this.filtros.apellidoPat.toLowerCase()))
-      && (!this.filtros.telefono || cliente.telefono.includes(this.filtros.telefono))
+    return (!this.filtros.numCliente || (cliente.numCliente || '').toLowerCase().includes(this.filtros.numCliente.trim().toLowerCase()))
+      && (!this.filtros.nombre || (cliente.nombre || '').toLowerCase().includes(this.filtros.nombre.toLowerCase()))
+      && (!this.filtros.apellidoPat || (cliente.apellidoPat || '').toLowerCase().includes(this.filtros.apellidoPat.toLowerCase()))
+      && (!this.filtros.telefono || (cliente.telefono || '').includes(this.filtros.telefono))
       && (!this.filtros.fechaInicio || new Date(cliente.fechaAlta) >= new Date(this.filtros.fechaInicio))
       && (!this.filtros.fechaFin || new Date(cliente.fechaAlta) <= new Date(this.filtros.fechaFin));
   });
 }
 
 limpiarFiltros() {
-  this.filtros = { nombre: '', apellidoPat: '', telefono: '', fechaInicio: null, fechaFin: null };
-  this.clientesFiltrados = [...this.clientes];
+ this.filtros = { numCliente: '', nombre: '', apellidoPat: '', telefono: '', fechaInicio: null, fechaFin: null };
+ this.clientesFiltrados = [...this.clientes];
 }
 
 toggleFiltros() {
@@ -319,4 +321,3 @@ generarNumCliente(): void {
 }
 
 }
-

@@ -37,7 +37,21 @@
       <!-- Contenido del Panel -->
       <div class="p-6 space-y-6">
         <!-- Fila Superior: Campos de Texto -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+          <div class="filter-field">
+            <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+              <i class="pi pi-hashtag text-gray-500"></i>
+              Num. Cliente
+            </label>
+            <input
+              type="text"
+              pInputText
+              [(ngModel)]="filtros.numCliente"
+              placeholder="Ej. C2022-0001"
+              class="filter-input"
+            />
+          </div>
+
           <div class="filter-field">
             <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
               <i class="pi pi-user text-gray-500"></i>
